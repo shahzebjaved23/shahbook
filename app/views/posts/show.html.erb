@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<section class="jumbotron">
+	<h1><%= @post.title %></h1>
+	<p><%= @post.body %></p>
+	<span>created : <%= time_ago_in_words(@post.created_at) %></span>
+</section>
+
+<hr/>
+
+<%= render 'partials/comments' , resource: @post %>
+
+<hr/>
+
+<% if @post.user == current_user %>
+	<%= render "partials/security_level" ,resource: @post %>
+	<%= link_to 'Edit', edit_user_post_path(current_user,@post) %> |
+	<%= link_to 'Back', user_posts_path(current_user) %>
+<% end %>

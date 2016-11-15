@@ -1,0 +1,11 @@
+<div class="row">
+	<%= form_for @profile_picture, url: user_profile_picture_path do |f| %>
+		
+		<%= f.file_field :picture %>
+
+		<hr/>
+		
+		<%= f.submit %>
+
+	<% end %>
+</div>

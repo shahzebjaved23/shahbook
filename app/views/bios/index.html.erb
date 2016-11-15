@@ -1,0 +1,43 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Bios</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Work place</th>
+      <th>Designation</th>
+      <th>College</th>
+      <th>School</th>
+      <th>University</th>
+      <th>University degree</th>
+      <th>School cert</th>
+      <th>College cert</th>
+      <th>Home town</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @bios.each do |bio| %>
+      <tr>
+        <td><%= bio.work_place %></td>
+        <td><%= bio.designation %></td>
+        <td><%= bio.college %></td>
+        <td><%= bio.school %></td>
+        <td><%= bio.university %></td>
+        <td><%= bio.university_degree %></td>
+        <td><%= bio.school_cert %></td>
+        <td><%= bio.college_cert %></td>
+        <td><%= bio.home_town %></td>
+        <td><%= link_to 'Show', bio %></td>
+        <td><%= link_to 'Edit', edit_bio_path(bio) %></td>
+        <td><%= link_to 'Destroy', bio, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Bio', new_bio_path %>

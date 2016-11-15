@@ -1,0 +1,40 @@
+<% if current_user.id == params[:user_id].to_i %>
+	<%= form_tag(user_security_level_path(current_user)) do %>
+
+		<%= label_tag "Security Setting :",nil,style: "margin-bottom: 15px;font-size: 21px;font-weight: 200;" %>
+
+		<% if resource.class.name == "User" %>
+			<% @selected_id = current_user.getFriendLevel(resource.id).id %>
+			<% @securitylevels = Friendlevel.all %>
+			<% @value = "friendlevel" %>
+			<%= hidden_field_tag :friend_id , resource.id %>
+		<% elsif resource.class.name == "Post"%>
+			<% @selected_id = Post.find(resource.id).security_setting.securitylevel_id %>
+			<%= hidden_field_tag :post_id , resource.id %>
+			<% @securitylevels = Securitylevel.all %>
+			<% @value = "securitylevel" %>
+		<% elsif resource.class.name == "Photo"%>
+			<% @selected_id = Photo.find(resource.id).security_setting.securitylevel_id %>
+			<%= hidden_field_tag :photo_id , resource.id %>
+			<% @securitylevels = Securitylevel.all %>
+			<% @value = "securitylevel" %>
+		<% elsif resource.class.name == "Album"%>
+			<% @selected_id = Album.find(resource.id).security_setting.securitylevel_id %>
+			<%= hidden_field_tag :album_id , resource.id %>
+			<% @securitylevels = Securitylevel.all %>
+			<% @value = "securitylevel" %>
+		<% end %>
+
+		<%= select_tag(:securitylevel_id, 
+			options_from_collection_for_select(
+				@securitylevels,
+				"id",
+				@value,
+				:selected => @selected_id ),
+				class: "application-select "
+			) %>
+		
+		<%= submit_tag "Change security level", class: "btn btn-small btn-primary",style: "color:white;margin-top:0;"%>
+
+	<% end %>
+<% end %>

@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1><%= @user.first_name %>'s Posts</h1>
+
+<% if @user == current_user %>
+	<%= link_to 'New Post', new_user_post_path , class: "btn btn-primary", style: "color: white;" %>
+<% end %>
+
+<hr/>
+
+<% @posts.order("posts.created_at desc").each do |post| %>
+	<div class="component">
+	    <h1><%= post.title%></h1>
+	    <span>created <%= time_ago_in_words post.created_at %> ago</span> | 
+	    <span>updated <%= time_ago_in_words post.updated_at %> ago</span>
+	    
+	    <h2><%= truncate(post.body) %></h2>
+	    
+	    <%= link_to "View Full Post", user_post_path(@user,post),class: "btn btn-primary",style: "color:white;"%>
+
+	
+	    <% if post.user == current_user %>
+		    <%= link_to "Edit",edit_user_post_path(current_user,post), class: "btn btn-primary", style: "color: white;" %>
+		    <%= link_to "Delete",user_post_path(current_user,post) , method: :delete, class: "btn btn-danger", style: "color: white;" %> 
+	    <% end %> 
+	    
+	</div>
+	<hr/> 
+<% end %>

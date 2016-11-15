@@ -1,0 +1,2 @@
+module FriendShipHelper
+end

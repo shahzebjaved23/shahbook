@@ -1,0 +1,39 @@
+<div>
+	<% if @requests.count != 0 %>
+		<h1>You have following friend requests</h1>
+		<% @requests.each do |request| %>
+		<div class="jumbotron">
+			<div class="row">
+				<section class="col-md-3">
+					<img src="<%= request.sender.profile_picture ? request.sender.profile_picture.picture.url : image_url('defaulthead.png') %>" class="img img-responsive">
+				</section>
+				<section class="col-md-9">
+					<h1><%= request.sender.first_name %> <%= request.sender.last_name %></h1>
+			
+					<% if request.sender.bio %>
+						<p><%= request.sender.bio.designation %> at <%= request.sender.bio.work_place %></p>
+					<% end %>
+					
+					<%= form_tag(user_friend_ship_path(current_user,request.id),method: :put) do %>
+						<%= label_tag "Security Setting :" %>
+						<%= select_tag(:reciever_security_setting_id, 
+							options_from_collection_for_select(Securitylevel.all, "id", "securitylevel")) %>
+							
+						<%= submit_tag "Accept Request"%>
+					<% end %>
+
+					<%= link_to 'Cancel Request', user_friend_ship_path(current_user,request.id),method: :delete,class: "btn btn-primary"%>
+					
+					<span>
+						<%= link_to "View Profile",user_path(request.sender), class: "btn btn-primary" %>
+					</span>
+					
+				</section>
+			</div>
+			
+		</div>
+		<% end %>
+	<% else %>
+		<h1>No friend requests</h1>
+	<% end %>
+</div>

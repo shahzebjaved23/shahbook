@@ -1,0 +1,83 @@
+<div class="jumbotron">
+	
+	<div class="row">
+		
+		<div class="col-md-4">
+			<img width="100%" src="<%= @user.profile_picture ? @user.profile_picture.picture.url : image_url('defaulthead.png') %>">
+
+		</div>
+		
+		<div class="col-md-8">
+			<h1 style="font-family: arial;margin-top: 0;padding-top: 0;">
+				<%= @user.first_name %> <%= @user.last_name %>
+			</h1>
+		
+
+			<hr/>
+			
+			<div>
+				<% if @user.bio %>
+					<p>
+						Works At <%= current_user.bio.work_place %> as <%= current_user.bio.designation%>
+					</p>
+					<p>
+						Studied <%= current_user.bio.university_degree %> at <%= current_user.bio.university%>
+					</p>
+					<p>
+						Studied <%= current_user.bio.college_cert %> at <%= current_user.bio.college %>
+					</p>
+					<p>
+						Studied <%= current_user.bio.school_cert %> at <%= current_user.bio.school %>
+					</p>
+					<p>
+						Home Town : <%= current_user.bio.home_town %>
+					</p>
+				
+				<% else %>
+					<h3><%= @user.first_name %> has no personal information to show</h3>
+				<% end %>
+
+				<% if current_user.isFriendOf?(@user.id) %>				
+					<%= form_tag(action: "change_friend_security_level",controller: "profile") do %>
+						<%= label_tag "Security Setting :",nil,style: "margin-bottom: 15px;font-size: 21px;font-weight: 200;"%>
+						<%= select_tag(:friend_security_level, 
+							options_from_collection_for_select(Securitylevel.all, "id", "securitylevel",:selected => current_user.getFriendSecurityLevel(@user.id).first.id),class: "application-select ") %>
+							
+						<input type="hidden" name="friend_id" value="<%= @user.id %>"></input>
+						<%= submit_tag "Change Security Level", class: "btn btn-primary",style: "color:white;margin-top:0;"%>
+					<% end %>
+				<% elsif FriendShip.isSentRequest?(current_user.id,@user.id) %>
+					<button class="btn btn-primary">Friend Request Sent</button>
+				<% elsif @user.id == current_user.id %>
+					<button class="btn btn-primary">Your Profile</button>
+				<% else %>
+					<%= form_tag(action: "send_friend_request",controller: "profile") do %>
+						<%= label_tag "Security Setting :",nil,style: "margin-bottom: 15px;font-size: 21px;font-weight: 200;" %>
+						<%= select_tag(:sender_security_level_id, 
+							options_from_collection_for_select(Securitylevel.all, "id", "securitylevel"),class: "application-select") %>
+							
+						<input type="hidden" name="id" value="<%= @user.id %>"></input>
+						<%= submit_tag "Send Friend Request", class: "btn btn-primary",style: "color:white;margin-top:0;" %>
+					<% end %>
+				<% end %>
+			
+			</div>
+		</div>
+	</div>			 
+
+	<hr/>
+
+	<section class="row">
+		<div class="col-md-4" style="padding-left: 0px;padding-right: 0px;">
+			<%= link_to "Photos", user_profile_photos_path(@user),class: "btn btn-primary",style: "width: 100%;border-radius:0; color: white;margin:0" %>
+		</div>
+		<div class="col-md-4" style="padding-left: 0px;padding-right: 0px;">
+			<%= link_to "Albums", user_profile_albums_path(@user),class: "btn btn-primary",style: "width: 100%;border-radius:0; color: white;margin:0margin:0"%>
+		</div>
+		<div class="col-md-4" style="padding-left: 0px;padding-right: 0px;">
+			<%= link_to "Posts", user_profile_posts_path(@user),class: "btn btn-primary",style: "width: 100%;border-radius:0; color: white;margin:0" %>
+		</div>
+	</section>			
+	
+</div>
+	

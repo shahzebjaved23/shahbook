@@ -1,0 +1,45 @@
+<div class="row">
+	<%
+		post_url = [] 
+		if params.has_key?(:album_id)
+			post_url = [@user,@album,@photo]
+		else
+			post_url = [@user,@photo]
+		end
+	%>
+
+	<%= form_for post_url , html: { multipart: true,class: "form-horizontal"}  do |f| %>
+		
+		<% if @photo.errors.any? %>
+		   <div id="error_explanation">
+		      <h2><%= pluralize(@photo.errors.count, "error") %> prohibited this photo from being saved:</h2>
+
+		      <ul>
+		      <% @photo.errors.full_messages.each do |message| %>
+		        <li><%= message %></li>
+		      <% end %>
+		      </ul>
+		    </div>
+		<% end %>
+
+		<%= f.label :caption %>
+		<%= f.text_field :caption ,class: "form-control" %>
+		<%= f.file_field :picture, class: "form-control" %>
+
+
+		<hr/>
+
+		<% if @photo.album == nil %>
+
+			<%= label_tag "Security Setting :" %>
+			<%= select_tag(:securitylevel_id, 
+				options_from_collection_for_select(Securitylevel.all, "id", "securitylevel")) %>
+		<% end %>
+
+		
+		<hr/>
+
+		<%= f.submit %>
+
+	<% end %>
+</div>

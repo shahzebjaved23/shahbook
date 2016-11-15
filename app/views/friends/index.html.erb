@@ -1,0 +1,53 @@
+<% #if the current user has friends then show friends %>
+<% if current_user.getAllFriends.count != 0 %>
+	<div>
+		<p>You have <%= current_user.getAllFriends.count %> friends</p>
+		
+		<% current_user.getAllFriends.each do |friend| %>
+			
+			<div class="component">
+				<div class="row">
+					<div class="col-md-3">
+						<img width="200px" height="200px" src="<%= friend.profile_picture ? friend.profile_picture.picture.url : image_url('defaulthead.png') %>">
+					</div>
+
+					<div class="col-md-4">
+						<h2><%= friend.first_name %> <%= friend.last_name %></h2>
+						<% if friend.bio %>
+							<p><%= friend.bio.designation %> at <%= friend.bio.work_place %></p>
+						<% end %>
+						
+						
+						<p>Friend since : <%= time_ago_in_words(FriendShip.getFriendShip(current_user.id,friend.id).updated_at) %></p>
+						
+						<p>
+							Friend Security Level : <%= current_user.getFriendLevel(friend.id) ? current_user.getFriendLevel(friend.id).friendlevel : "No security level"  %>
+						</p>
+
+						<p>
+							<%= link_to "View Profile",user_path(friend), class: "btn btn-primary" , style: "color: white;" %>
+
+							<%= link_to "Un-Friend" , user_friend_ship_path(current_user,FriendShip.getFriendShip(current_user.id,friend.id).id), method: :delete , class: "btn btn-danger" , style: "color: white;"%>
+						</p>						
+					</div>
+
+					<div class="col-md-5">
+						<h2>Change Security level</h2>
+						<%= render "partials/security_level" , resource: friend %>
+					</div>			
+				</div>
+			</div>
+			<hr/>
+		<% end %>
+	</div>
+<% else %>
+<% # else dislay that you have no friends %>
+	<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-8">
+			<div class="jumbotron">
+				<h1>You have no friends</h1>
+			</div>
+		</div>
+	</div>
+<% end %>

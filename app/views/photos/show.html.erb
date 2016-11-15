@@ -1,0 +1,13 @@
+<%= @photo.album ? link_to("See Whole Album '#{@photo.album.title}'",user_album_path(@user,@photo.album),class: "btn btn-primary",style: "color:white;clear: both;") : " " %>
+<%= render "partials/security_level" , resource: @photo %>
+<hr/>
+<div class="row" >
+	<section class="col-md-6" style="background-color: #101010;">
+		<img src="<%= @photo.picture.url %>" alt="Picture" class="img img-responsive" style="margin: 0 auto;">	
+	</section>
+	
+	<section class="col-md-6">
+		<%= render 'partials/comments' , resource: @photo %>
+	</section>
+</div>
+

@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  work_place: MyString
+  designation: MyString
+  college: MyString
+  school: MyString
+  university: MyString
+  university_degree: MyString
+  school_cert: MyString
+  college_cert: MyString
+  home_town: MyString
+
+two:
+  work_place: MyString
+  designation: MyString
+  college: MyString
+  school: MyString
+  university: MyString
+  university_degree: MyString
+  school_cert: MyString
+  college_cert: MyString
+  home_town: MyString

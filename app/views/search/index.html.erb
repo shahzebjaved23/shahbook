@@ -1,0 +1,59 @@
+<% if @search_results != nil %>
+	<h1>Showing results for '<%= @q %>'</h1>
+	
+	<% @search_results.each do |friend| %>
+		
+		<div class="jumbotron">
+
+			<div class="row">
+				<div class="col-md-4">
+					<img width="200px" height="200px" src="<%= friend.profile_picture ? friend.profile_picture.picture.url : image_url('defaulthead.png')%>">
+				</div>
+
+				<div class="col-md-8">
+					<h1><%= friend.first_name %> <%= friend.last_name %></h1>
+				
+					<% if friend.bio %>
+						<p><%= friend.bio.designation %> at <%= friend.bio.work_place %></p>
+					<% end %>
+					
+					<% if current_user.getAllFriends.include?(friend) %>
+						<p>Friend since : <%= time_ago_in_words(FriendShip.getFriendShip(current_user.id,friend.id).created_at) %></p>
+						<span>Security Level : <%= current_user.getFriendSecurityLevel(friend.id).first.securitylevel %></span>
+					
+					<%  elsif friend.id == current_user.id %>
+
+					<% 
+					# if friend request is sent then display "friend request sent" 
+					elsif  FriendShip.isSentRequest?(current_user.id,friend.id) %>
+						<button class="btn btn-primary">Friend Request Sent</button>
+						<span>
+							<%= link_to "View Profile",user_path(friend.id), class: "btn btn-primary" ,style: "color: white;"%>
+						</span>
+					<% else %>
+
+						<%= form_tag(user_friend_ships_path(current_user)) do %>
+							<%= label_tag "Security Setting :",nil,style: "margin-bottom: 15px;font-size: 21px;font-weight: 200;" %>
+							<%= select_tag(:sender_security_level_id, 
+								options_from_collection_for_select(Securitylevel.all, "id", "securitylevel"),class: "application-select") %>
+							
+							<%= hidden_field_tag :id, friend.id %>
+							<%= submit_tag "Send Friend Request", class: "btn btn-primary",style: "color:white;margin-top:0;" %>
+						<% end %>
+
+						<span>
+							<%= link_to "View Profile",user_path(friend.id), class: "btn btn-primary" ,style: "color: white;"%>
+						</span>
+				
+					<% end %>
+					
+				</div>
+				
+			</div>
+		</div>
+	<% end %>
+<% else %>
+	<div>
+		<h1>Not results found for '<%= @q %>'</h1>
+	</div>
+<% end %>

@@ -1,0 +1,27 @@
+<% if @user == current_user %>
+	<p><%= link_to "Add Album",new_user_album_path(current_user),class: "btn btn-primary",style: "color:white;" %></p>
+<% end %>
+<% if @albums.count > 0 %>
+	<h1><%= @user.first_name %>'s Albums</h1>
+	<div class="row">
+		<% @albums.each do |album| %>
+				
+			<div class="col-md-4">
+				<a href="<%= user_album_path(album.user,album) %>">
+					<div class="jumbotron">
+						<h1><%= album.title %></h1>
+						<% if album.photos.count > 0 %>
+							<img src="<%= album.photos.first.picture.url %>" class="img-responsive" alt="Album Image">
+						<% end %>
+						
+					</div>
+				</a>
+				<%= render "partials/security_level" ,resource: album %>
+			</div>	
+				
+		<% end %>
+	</div>
+<% else %>
+<h1>There are no albums to show</h1>
+<% end %>
+

@@ -1,0 +1,25 @@
+<h1>Album Title : <%= @album.title %></h1>
+<% if @user == current_user %>
+	<%= link_to "Add Photo To this album", new_user_album_photo_path(@user,@album) ,class: "btn btn-primary",style: "color:white;clear:both;" %>
+	<%= render "partials/security_level" ,resource: @album %>
+<% end %>
+
+<hr/>
+<% if @album.photos.count > 0 %>
+	<div class="row">
+		<% @album.photos.each do |photo| %>
+			<div class="col-md-4">
+				<div class="jumbotron">
+					<h2 style="margin-top: 0px;"><%= photo.caption %></h2>
+					<a href="<%= user_album_photo_path(@user,@album,photo) %>">
+						<img src="<%= photo.picture.url %>" class="img-responsive">
+					</a>
+				</div>
+			</div>
+		<% end %>
+	</div>
+	<%= render "partials/comments" ,resource: @album %>	
+<% else %>
+	<h3>There are no photos in the album</h3>
+<% end %>
+

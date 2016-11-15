@@ -1,0 +1,128 @@
+	
+	<div class="row">
+		<section class="col-md-4" style="background-color: #333;padding-left:0;padding-right: 0;">
+
+			<img style="margin:0 auto;width: auto;height: 300px;" class="img img-responsive" src="<%= @user.profile_picture ? @user.profile_picture.picture.url : image_url('defaulthead.png') %>">
+					
+			<% if @user == current_user %> 
+				<%= link_to "Change Profile Picture",new_user_profile_picture_path(current_user) , class: "btn btn-primary", style: "width: 100%;border-radius:0;color: white;"%>
+				
+				<%= link_to "Delete Profile Picture",user_profile_picture_path(current_user),method: :delete, class: "btn btn-danger", style: "width: 100%;border-radius:0;color: white;"%>
+			<% end %>
+		</section>
+
+	
+
+		<section class="col-md-8">
+			<div class="jumbotron">
+				<h1	style="font-family: arial;margin-top: 0;">
+					<%= @user.first_name %> <%= @user.last_name %>
+				</h1>
+				<% if @user.bio != nil %>
+				   	<p>
+						Works At <%= @user.bio.work_place %> as <%= @user.bio.designation%>
+					</p>
+					<p>
+						Studied <%= @user.bio.university_degree %> at <%= @user.bio.university%>
+					</p>
+					<p>
+						Studied <%= @user.bio.college_cert %> at <%= @user.bio.college %>
+					</p>
+					<p>
+						Studied <%= @user.bio.school_cert %> at <%= @user.bio.school %>
+					</p>
+					<p>
+						Home Town : <%= @user.bio.home_town %>
+					</p>
+				
+				<% else %>
+					<h3><%= @user.first_name %> has no personal information to show</h3>
+				<% end %>
+			</div>		
+		</section>	
+	</div>
+
+	<hr/>
+
+	<div>
+		<h1><%= @user.first_name %>'s <%= link_to "Posts",user_posts_path(@user) %></h1>
+		<section>
+			<% @user == current_user ? @posts = @user.getPosts : @posts = @user.getPosts(current_user.id ) %>
+
+			<% if @posts.count > 0 %>
+				<% @posts.order("posts.created_at limit 4").each do |post| %>
+					<div class="jumbotron">
+					    <h1><%= post.title%></h1>
+					    <span>created <%= time_ago_in_words post.created_at %> ago</span> | 
+					    <span>updated <%= time_ago_in_words post.updated_at %> ago</span>
+					    
+					    <h2><%= truncate(post.body) %></h2>
+					    
+					    <%= link_to "View Full Post", user_post_path(@user,post),class: "btn btn-primary",style: "color:white;"%>
+
+					
+					    <% if post.user == current_user %>
+						    <%= link_to "Edit",edit_user_post_path(current_user,post), class: "btn btn-primary", style: "color: white;" %>
+						    <%= link_to "Delete",user_post_path(current_user,post) , method: :delete, class: "btn btn-danger", style: "color: white;" %> 
+					    <% end %> 
+					    
+					</div>
+					<hr/>
+				<% end %>
+			<% else %>
+				<h1><%= "#{@user.first_name} has not posts to show" %></h1>
+			<% end %>
+		</section>
+	</div>
+
+	<hr/>
+
+	<div>
+		<section class="row">
+			<% @user == current_user ? @photos = @user.getPhotos : @photos = @user.getPhotos(current_user.id) %>
+			<% if @photos.count > 0 %>
+				<h1>
+					<%= @user.first_name %>'s <%= link_to "Photos",user_photos_path(@user) %> 
+				</h1>
+				<% @photos.order("photos.created_at limit 3").each do |photo| %>
+					<div class="col-md-4">
+						<%= link_to image_tag(photo.picture.url,class: "img img-responsive"),user_photo_path(@user,photo) %>
+					</div>
+				<% end %>
+			<% else %>
+				<h1><%= "#{@user.first_name} has not photos to show" %></h1>
+			<% end %> 
+		</section>
+	</div>
+
+	<hr/>
+
+	<div>
+		<section class="row">
+			<% @user == current_user ? @albums = @user.getAlbums : @albums = @user.getAlbums(current_user.id) %>
+			<% if @albums.count > 0 %>
+				<h1>
+					<%= @user.first_name %>'s <%= link_to "Albums",user_albums_path(@user) %>
+				</h1>
+				<% @albums.order("albums.created_at limit 3").each do |album| %>
+					<div class="col-md-4">
+						<a href="<%= user_album_path(album.user,album) %>">
+							<div class="jumbotron">
+								<h1><%= album.title %></h1>
+								<% if album.photos.count > 0 %>
+									<img src="<%= album.photos.first.picture.url %>" class="img-responsive" alt="Album Image">
+								<% end %>
+								
+							</div>
+						</a>
+						<%= render "partials/security_level" ,resource: album %>
+					</div>	
+				<% end %>
+			<% else %>
+				<h1><%= "#{@user.first_name} has no albums to show" %></h1>
+			<% end %> 
+		</section>
+	</div>
+
+
+

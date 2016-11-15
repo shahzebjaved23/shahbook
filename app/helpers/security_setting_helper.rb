@@ -1,0 +1,2 @@
+module SecuritySettingHelper
+end

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+someone:
+  first_name: MyString
+  last_name: MyString
+  bio_id: 1
+
+sometwo:
+  first_name: MyString
+  last_name: MyString
+  bio_id: 1

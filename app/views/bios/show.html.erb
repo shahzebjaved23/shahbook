@@ -1,0 +1,51 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Work place:</strong>
+  <%= @bio.work_place %>
+</p>
+
+<p>
+  <strong>Designation:</strong>
+  <%= @bio.designation %>
+</p>
+
+<p>
+  <strong>College:</strong>
+  <%= @bio.college %>
+</p>
+
+<p>
+  <strong>School:</strong>
+  <%= @bio.school %>
+</p>
+
+<p>
+  <strong>University:</strong>
+  <%= @bio.university %>
+</p>
+
+<p>
+  <strong>University degree:</strong>
+  <%= @bio.university_degree %>
+</p>
+
+<p>
+  <strong>School cert:</strong>
+  <%= @bio.school_cert %>
+</p>
+
+<p>
+  <strong>College cert:</strong>
+  <%= @bio.college_cert %>
+</p>
+
+<p>
+  <strong>Home town:</strong>
+  <%= @bio.home_town %>
+</p>
+
+<% if @bio.user == current_user %>
+<%= link_to 'Edit', edit_user_bio_path(@user) %> |
+<%= link_to 'Back', user_path(@user) %>
+<% end %>

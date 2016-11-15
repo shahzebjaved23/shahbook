@@ -1,0 +1,31 @@
+<div class="row">
+	<div>
+		<%= form_for [current_user,@album] do |f| %>
+
+			<% if @album.errors.any? %>
+			    <div id="error_explanation">
+			    	<h2><%= pluralize(@album.errors.count, "error") %> prohibited this album from being saved:</h2>
+
+			    	<ul>
+			    	<% @album.errors.full_messages.each do |message| %>
+			    		<li><%= message %></li>
+			    	<% end %>
+			    	</ul>
+			    </div>
+			<% end %>
+
+			<%= f.label :title %>
+			<%= f.text_field :title, class: "form-control" %>
+
+			<hr/>
+
+			<%= label_tag "Security Setting :" %>
+			<%= select_tag(:securitylevel_id, 
+				options_from_collection_for_select(Securitylevel.all, "id", "securitylevel")) %>
+			
+			<hr/>
+
+			<%= f.submit class: "btn btn-primary", style: "margin-top:10px;"%>
+		<% end %>
+	</div>
+</div>

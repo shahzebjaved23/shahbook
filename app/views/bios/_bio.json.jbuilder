@@ -1,0 +1,2 @@
+json.extract! bio, :id, :work_place, :designation, :college, :school, :university, :university_degree, :school_cert, :college_cert, :home_town, :created_at, :updated_at
+json.url bio_url(bio, format: :json)
