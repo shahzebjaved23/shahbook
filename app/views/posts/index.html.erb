@@ -9,7 +9,7 @@
 <hr/>
 
 <% @posts.order("posts.created_at desc").each do |post| %>
-	<div class="component">
+	<div class="jumbotron">
 	    <h1><%= post.title%></h1>
 	    <span>created <%= time_ago_in_words post.created_at %> ago</span> | 
 	    <span>updated <%= time_ago_in_words post.updated_at %> ago</span>

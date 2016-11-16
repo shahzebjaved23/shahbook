@@ -171,6 +171,10 @@ class User < ActiveRecord::Base
 										select photos.id from photos where user_id = #{self.id}
 									)
 						)
+							OR
+						(
+							comments.user_id = #{self.id}
+						)
 						
 					)
 				)
@@ -206,6 +210,10 @@ class User < ActiveRecord::Base
 										(
 											select photos.id from photos where user_id = #{self.id}
 										)
+							)
+								OR
+							(
+								user_id = #{self.id}
 							)
 							
 						)

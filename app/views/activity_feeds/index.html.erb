@@ -1,10 +1,41 @@
+<section>
+	<div class="row">
+		<section class="col-md-6" style="padding-right: 0;">
+			<%= link_to "Add Photo", new_user_photo_path(current_user),class: "btn btn-primary",style: "color:white;width:100%;border-radius:0;" %>
+		</section>
+		<section class="col-md-6" style="padding-left: 0;">
+			<%= link_to "Add Album" , new_user_album_path(current_user),class: "btn btn-primary",style: "color:white;width:100%;border-radius:0;" %>
+		</section>
+	</div>
+
+	<div>
+		<%= form_tag(user_posts_path(current_user),class:"form-group") do %>
+			<%= fields_for :post do |ff|%>
+				<%= ff.text_field :title, class: "form-control", placeholder: "Post Title..."%>
+				<%= ff.text_area :body,class: "form-control",placeholder: "Post Body..."%>
+				<div class="form-group">
+				    <label>Security Setting</label>
+				    <select name="securitylevel_id" class="form-control">
+					    <% Securitylevel.all.each do |level| %>
+					    	<option value="<%= level.id %>"><%= level.securitylevel %></option>
+					    <% end %> 
+				    </select>
+				 </div>
+				<%= ff.submit "New Post" ,class: "btn btn-primary",style: "color: white;"%>
+			<% end %>
+		<% end %>
+	</div>	
+</section>
+
+<hr/>
+
 <% if @activity_feeds.count > 0 %>
 	<% @activity_feeds.each do |activity_feed| %>
 	<div class="jumbotron">
 
 		<div class="row">
-			<div class="col-md-4">
-				<img width="200px" height="200px" src="<%= activity_feed.user.profile_picture ? activity_feed.user.profile_picture.picture.url : image_url('defaulthead.png') %>">		
+			<div class="col-md-4" style="background-color: #333;">
+				<%= link_to(activity_feed.user.profile_picture ? image_tag(activity_feed.user.profile_picture.picture.url,class: "img img-responsive",style: "width:auto;height:200px;margin:0 auto;") : image_tag(image_url('defaulthead.png'),class: "img img-responsive",style: "width:auto;height:200px;margin:0 auto;"), user_path(activity_feed.user)) %>		
 			</div>
 
 			<div class="col-md-8">
