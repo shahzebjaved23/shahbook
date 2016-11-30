@@ -1,11 +1,30 @@
 <div class="row">
-	<%= form_for @profile_picture, url: user_profile_picture_path do |f| %>
-		
-		<%= f.file_field :picture %>
+	<%= form_for @profile_picture,url: user_profile_picture_path,class: "form-group" do |f| %>
 
-		<hr/>
+
+		<%= f.file_field :picture,class: "file_field_tag form-control" %>
 		
-		<%= f.submit %>
+		<hr/>
+		<img style="margin: 0 auto;" id="blah" class="img img-responsive" src="<%= current_user.profile_picture ? current_user.profile_picture.picture.url : image_url('defaulthead.png') %>" alt="Selected Image">
+		
+		
+		<%= f.submit "Create Profile Picture" ,class: 'btn btn-primary' %>
 
 	<% end %>
+
+	
 </div>
+
+
+<script>
+	$(".file_field_tag").change(function(){
+		var reader = new FileReader();
+		reader.onload = function (e) {
+                    $('#blah')
+                        .attr('src', e.target.result);
+                };
+
+        reader.readAsDataURL(this.files[0]);
+	});
+</script>
+

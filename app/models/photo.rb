@@ -8,7 +8,7 @@ class Photo < ActiveRecord::Base
 
 	has_many :likes, as: :likeable
 
-	has_attached_file :picture, default_url: "/images/"
+	has_attached_file :picture,styles: { medium: "300x300>", thumb: "100x100>" } ,default_url: "/images/:styles/missing.png"
 	
-	validates_attachment_content_type :picture, content_type: /\Aimage\/.*\z/
+	validates_attachment_content_type :picture, content_type: /\Aimage\/.*\z/	
 end

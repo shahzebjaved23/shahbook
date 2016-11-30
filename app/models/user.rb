@@ -24,6 +24,28 @@ class User < ActiveRecord::Base
 		FriendShip.where(reciever: self, state: "pending")
 	end
 
+	# Method that returns all the friends
+	def getAllFriends
+		User.where("
+			users.id IN 
+				(
+					select friend_ships.user_id from friend_ships where 
+						friend_ships.friends_id = #{self.id} and friend_ships.state = 'done'
+				) 
+				OR 
+			users.id IN 
+				(
+					select friend_ships.friends_id from friend_ships where 
+						friend_ships.user_id = #{self.id} and friend_ships.state = 'done'
+				)
+		")
+	end
+
+	# Method to check if a certain user is a friend of ther user this method is called upon
+	def isFriendOf?(friendId)
+		self.getAllFriends.include?(User.find(friendId))		
+	end
+
 	
 	# ---------------------------------------------------------------------------------------
 	# Methods that return user infromation based on the users security setting on that 
@@ -228,15 +250,25 @@ class User < ActiveRecord::Base
 	# called on the current logged in user (current_user)
 	# every time a user created or updates a new information, a new entry in the table is created
 	# ---------------------------------------------------------------------------------------
-
 	def createActivityFeed(type,action)
+		# set the security level id of the resource that the comment or like references
+		
 		securitylevel_id = nil;
-		if type.class.name == "Comment"
+		
+		if type.class.name == "Comment"	 
 			if type.commentable_type == "Post"
 				securitylevel_id = Post.find(type.commentable_id).security_setting.securitylevel.id
 			elsif type.commentable_type == "Photo"
 				securitylevel_id = Photo.find(type.commentable_id).security_setting.securitylevel.id
 			elsif type.commentable_type == "Album"
+				securitylevel_id = Album.find(type.commentable_id).security_setting.securitylevel.id
+			end
+		elsif type.class.name == "Like"
+			if type.likeable_type == "Post"
+				securitylevel_id = Post.find(type.commentable_id).security_setting.securitylevel.id
+			elsif type.likeable_type == "Photo"
+				securitylevel_id = Photo.find(type.commentable_id).security_setting.securitylevel.id
+			elsif type.likeable_type == "Album"
 				securitylevel_id = Album.find(type.commentable_id).security_setting.securitylevel.id
 			end
 		end
@@ -250,31 +282,8 @@ class User < ActiveRecord::Base
 		)
 	end
 
-	# Method that returns all the friends
-
-	def getAllFriends
-		User.where("
-			users.id IN 
-				(
-					select friend_ships.user_id from friend_ships where 
-						friend_ships.friends_id = #{self.id} and friend_ships.state = 'done'
-				) 
-				OR 
-			users.id IN 
-				(
-					select friend_ships.friends_id from friend_ships where 
-						friend_ships.user_id = #{self.id} and friend_ships.state = 'done'
-				)
-		")
-	end
-
-	# Method to check if a certain user is a friend of ther user this method is called upon
-	def isFriendOf?(friendId)
-		self.getAllFriends.include?(User.find(friendId))		
-	end
-
 	#----------------------------------------------------------------------------------------
-	# Private methods for getting the requested information
+	# Methods for getting the requested information
 	# Called on the user object whose information is being requested
 	# friendId is the id of the user who requests the information
 	#----------------------------------------------------------------------------------------

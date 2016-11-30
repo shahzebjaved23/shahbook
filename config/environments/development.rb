@@ -37,7 +37,7 @@ Rails.application.configure do
   config.assets.raise_runtime_errors = true
 
   # config for paperclip
-  Paperclip.options[:command_path] = "D:/Installations/ImageMagick-7.0.2-Q16/"
+  Paperclip.options[:command_path] = "D:/Installations/ImageMagick"
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
