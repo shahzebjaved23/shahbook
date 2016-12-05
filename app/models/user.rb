@@ -127,144 +127,6 @@ class User < ActiveRecord::Base
 		recieverSecurityLevel = FriendShip.select("securitylevel2_id + 1").where(sender: self,reciever: self.getAllFriends).limit(1)
 
 		ActivityFeed.where(user: senders).where("securitylevel_id >= (?)",senderSecurityLevel).or(ActivityFeed.where(user: recievers).where("securitylevel_id >= (?)",recieverSecurityLevel)).or(ActivityFeed.where(user: self))
-
-		# securedFriendFeeds = friendFeeds.where("securitylevel_id >= (?)",senderSecurityLevel).or(ActivityFeed.where("securitylevel_id >= (?)",recieverSecurityLevel))
-
-		# securedFriendFeedsOrSelfFeeds = securedFriendFeeds.or(ActivityFeed.where(user: self))
-		
-		# friendsIds = self.getAllFriends.map(&:id)
-
-		# ActivityFeed.where("
-		# 	(
-		# 		user_id in (?) 
-		# 			AND 
-		# 		(
-		# 			securitylevel_id >= 
-		# 				(
-		# 					select (friend_ships.securitylevel2_id + 1) from friend_ships where 
-		# 						(
-		# 							user_id = #{self.id} AND friends_id in (?) AND state = 'done'
-		# 						) limit 1
-		# 				) 
-		# 				OR 
-		# 			securitylevel_id >= 
-		# 				(
-		# 					select (friend_ships.securitylevel1_id + 1) from friend_ships where 
-		# 						(
-		# 							user_id in (?) AND friends_id = #{self.id}
-		# 						) limit 1
-		# 				)
-		# 		)
-		# 	) 
-		# 		OR
-		# 	(
-		# 		(
-		# 			targetable_type = 'Post' 
-		# 				AND
-		# 			targetable_id in 
-		# 					(
-		# 						select posts.id from posts where user_id = #{self.id}
-		# 					)
-		# 		)
-		# 			OR
-		# 		(
-		# 			targetable_type = 'Album' 
-		# 				AND
-		# 			targetable_id in 
-		# 					(
-		# 						select albums.id from albums where user_id = #{self.id}
-		# 					)
-		# 		)
-		# 			OR
-		# 		(
-		# 			targetable_type = 'Photo' 
-		# 				AND
-		# 			targetable_id in 
-		# 					(
-		# 						select photos.id from photos where user_id = #{self.id}	
-		# 					)
-		# 		)
-		# 			OR
-		# 		(
-		# 			targetable_type = 'Comment' 
-		# 				AND
-		# 			targetable_id in 
-		# 			(
-		# 				select comments.id from comments where
-		# 				(
-		# 					commentable_type = 'Post'
-		# 						AND
-		# 					commentable_id in 
-		# 							(
-		# 								select posts.id from posts where user_id = #{self.id}	
-		# 							)
-		# 				)
-		# 					OR
-		# 				(
-		# 					commentable_type = 'Album'
-		# 						AND
-		# 					commentable_id in 
-		# 							(
-		# 								select albums.id from albums where user_id = #{self.id}
-		# 							)
-		# 				)
-		# 					OR
-		# 				(
-		# 					commentable_type = 'Photo'
-		# 						AND
-		# 					commentable_id in 
-		# 							(
-		# 								select photos.id from photos where user_id = #{self.id}
-		# 							)
-		# 				)
-		# 					OR
-		# 				(
-		# 					comments.user_id = #{self.id}
-		# 				)
-						
-		# 			)
-		# 		)
-		# 			OR
-		# 		(
-		# 			targetable_type = 'Like' 
-		# 				AND
-		# 			targetable_id in 
-		# 				(
-		# 					select likes.id from likes where
-		# 					(
-		# 						likeable_type = 'Post'
-		# 							AND
-		# 						likeable_id in 
-		# 								(
-		# 									select posts.id from posts where user_id = #{self.id}	
-		# 								)
-		# 					)
-		# 						OR
-		# 					(
-		# 						likeable_type = 'Album'
-		# 							AND
-		# 						likeable_id in 
-		# 								(
-		# 									select albums.id from albums where user_id = #{self.id}
-		# 								)
-		# 					)
-		# 						OR
-		# 					(
-		# 						likeable_type = 'Photo'
-		# 							AND
-		# 						likeable_id in 
-		# 								(
-		# 									select photos.id from photos where user_id = #{self.id}
-		# 								)
-		# 					)
-		# 						OR
-		# 					(
-		# 						user_id = #{self.id}
-		# 					)
-							
-		# 				)
-		# 		)
-		# 	)",friendsIds,friendsIds,friendsIds).order("activity_feeds.created_at DESC")
 	end
 
 	# ***************************************************************************************
@@ -318,224 +180,32 @@ class User < ActiveRecord::Base
 		recieverFriendLevel = FriendShip.select(:securitylevel2_id).where(user_id: friendId,friends_id: self.id)
 
 		Friendlevel.where(id: senderFriendLevel).or(Friendlevel.where(id: recieverFriendLevel)).first
-		
-
-		# Friendlevel.where("
-		# 	id IN 
-		# 		(
-		# 			select friend_ships.securitylevel1_id from friend_ships 
-		# 				where (user_id = #{self.id} and friends_id = #{friendId})
-		# 		) 
-		# 		OR 
-		# 	id IN 
-		# 		(
-		# 			select friend_ships.securitylevel2_id from friend_ships 
-		# 				where (user_id = #{friendId} and friends_id = #{self.id})
-		# 		) 
-		# ").first
 	end
-	
+
+	# following methods are used to get the public resouces
 	def getPublicPhotos
 		Photo.where(id: SecuritySetting.select(:securable_id).where(securable: self.photos,securitylevel: Securitylevel.find_by(Securitylevel: "Public")))
-
-		# Photo.joins(:user).joins("
-		# 	INNER JOIN 
-		# 		security_settings ON security_settings.securable_id = photos.id 
-		# 	INNER JOIN 
-		# 		securitylevels ON security_settings.securitylevel_id = securitylevels.id 
-		# 	").where("
-		# 		securitylevels.id = 5 
-		# 	AND 
-		# 		security_settings.securable_type = 'Photo' 
-		# 	AND 
-		# 		users.id = #{self.id}")
 	end
 
 	def getPublicAlbums
 		Album.where(id: SecuritySetting.select(:securable_id).where(securable: self.albums,securitylevel: Securitylevel.find_by(Securitylevel: "Public")))
-
-		# Album.joins(:user).joins("
-		# 	INNER JOIN 
-		# 		security_settings ON security_settings.securable_id = albums.id 
-		# 	INNER JOIN 
-		# 		securitylevels ON security_settings.securitylevel_id = securitylevels.id 
-		# 	").where("securitylevels.id = 5 
-		# 	AND 
-		# 		security_settings.securable_type = 'Album' 
-		# 	AND 
-		# 		users.id = #{self.id}")
-	end
+		end
 
 	def getPublicPosts
 		Post.where(id: SecuritySetting.select(:securable_id).where(securable: self.posts,securitylevel: Securitylevel.find_by(Securitylevel: "Public")))
-		# Post.joins(:user).joins("
-		# 	INNER JOIN 
-		# 		security_settings ON security_settings.securable_id = posts.id 
-		# 	INNER JOIN 
-		# 		securitylevels ON security_settings.securitylevel_id = securitylevels.id ")
-		# .where("securitylevels.id = 5 
-		# 	AND 
-		# 		security_settings.securable_type = 'Post' 
-		# 	AND 
-		# 		users.id = #{self.id}")
 	end
 
-	# if friend level is close friend
-	# 	return all the photos whith security level == close friend, friend,acquaintance
-	# if friend level is friend
-	# 	return all the photos with security level == friend , acquaintance
-	# if friend level is acquaintance
-	# 	return all the photos with security level == acquaintance
-	# if not a friend
-	#  return all the public photos
-
+	# The following methods are used to get a users secured resources for another user
 	def getSecurePhotos(friendId)
 		Photo.where(id: SecuritySetting.select(:securable_id).where(securable: self.photos).where("securitylevel_id >= (?)",self.getFriendLevel(friendId).friendlevel))
-
-		# # friendlevel = self.getFriendLevel(friendId)
-
-		# # if friendlevel.id == 1
-		# # 	return Photo.joins(:user).joins("
-		# # 		INNER JOIN 
-		# # 			security_settings ON security_settings.securable_id = photos.id 
-		# # 		INNER JOIN 
-		# # 			securitylevels ON security_settings.securitylevel_id = securitylevels.id ").where("(securitylevels.id = '2' 
-		# # 							OR
-		# # 						securitylevels.id = '3'
-		# # 							OR
-		# # 						securitylevels.id = '4'
-		# # 						OR
-		# 						securitylevels.id = '5')  
-		# 			AND 
-		# 				security_settings.securable_type = 'Photo' 
-		# 			AND 
-		# 				users.id = #{self.id}")
-		# elsif friendlevel.id == 2
-		# 	return Photo.joins(:user).joins("
-		# 		INNER JOIN 
-		# 			security_settings ON security_settings.securable_id = photos.id 
-		# 		INNER JOIN 
-		# 			securitylevels ON security_settings.securitylevel_id = securitylevels.id ").where("(securitylevels.id = '3'
-		# 							OR
-		# 						securitylevels.id = '4'
-		# 							OR
-		# 						securitylevels.id = '5')  
-		# 			AND 
-		# 				security_settings.securable_type = 'Photo' 
-		# 			AND 
-		# 				users.id = #{self.id}")
-		# elsif friendlevel.id == 3
-		# 	return Photo.joins(:user).joins("
-		# 		INNER JOIN 
-		# 			security_settings ON security_settings.securable_id = photos.id 
-		# 		INNER JOIN 
-		# 			securitylevels ON security_settings.securitylevel_id = securitylevels.id ").where("(securitylevels.id = '4'
-		# 							OR
-		# 						securitylevels.id = '5')  
-		# 			AND 
-		# 				security_settings.securable_type = 'Photo' 
-		# 			AND 
-		# 				users.id = #{self.id}")
-		# end	
 	end
 
 	def getSecureAlbums(friendId)
 		Album.where(id: SecuritySetting.select(:securable_id).where(securable: self.albums).where("securitylevel_id >= (?)",self.getFriendLevel(friendId).friendlevel))
-		# friendlevel = self.getFriendLevel(friendId)
-
-		# if friendlevel.id == 1
-		# 	return Album.joins(:user).joins("
-		# 		INNER JOIN 
-		# 			security_settings ON security_settings.securable_id = albums.id 
-		# 		INNER JOIN 
-		# 			securitylevels ON security_settings.securitylevel_id = securitylevels.id ").where("(securitylevels.id = '2' 
-		# 							OR
-		# 						securitylevels.id = '3'
-		# 							OR
-		# 						securitylevels.id = '4'
-		# 							OR
-		# 						securitylevels.id = '5')  
-		# 			AND 
-		# 				security_settings.securable_type = 'Album' 
-		# 			AND 
-		# 				users.id = #{self.id}")
-		# elsif friendlevel.id == 2
-		# 	return Album.joins(:user).joins("
-		# 		INNER JOIN 
-		# 			security_settings ON security_settings.securable_id = albums.id 
-		# 		INNER JOIN 
-		# 			securitylevels ON security_settings.securitylevel_id = securitylevels.id ").where("(securitylevels.id = '3'
-		# 							OR
-		# 						securitylevels.id = '4'
-		# 							OR
-		# 						securitylevels.id = '5')  
-		# 			AND 
-		# 				security_settings.securable_type = 'Album' 
-		# 			AND 
-		# 				users.id = #{self.id}")
-		# elsif friendlevel.id == 3
-		# 	return Album.joins(:user).joins("
-		# 		INNER JOIN 
-		# 			security_settings ON security_settings.securable_id = albums.id 
-		# 		INNER JOIN 
-		# 			securitylevels ON security_settings.securitylevel_id = securitylevels.id ").where("(securitylevels.id = '4'
-		# 							OR
-		# 						securitylevels.id = '5')  
-		# 			AND 
-		# 				security_settings.securable_type = 'Album' 
-		# 			AND 
-		# 				users.id = #{self.id}")
-		# end
 	end
 
 	def getSecurePosts(friendId)
 		Post.where(id: SecuritySetting.select(:securable_id).where(securable: self.posts).where("securitylevel_id >= (?)",self.getFriendLevel(friendId).friendlevel))
-	
-	# 	friendlevel = self.getFriendLevel(friendId)
-
-	# 	if friendlevel.id == 1
-	# 		return Post.joins(:user).joins("
-	# 			INNER JOIN 
-	# 				security_settings ON security_settings.securable_id = posts.id 
-	# 			INNER JOIN 
-	# 				securitylevels ON security_settings.securitylevel_id = securitylevels.id ").where("(securitylevels.id = '2' 
-	# 								OR
-	# 							securitylevels.id = '3'
-	# 								OR
-	# 							securitylevels.id = '4'
-	# 								OR
-	# 							securitylevels.id = '5')  
-	# 				AND 
-	# 					security_settings.securable_type = 'Post' 
-	# 				AND 
-	# 					users.id = #{self.id}")
-	# 	elsif friendlevel.id == 2
-	# 		return Post.joins(:user).joins("
-	# 			INNER JOIN 
-	# 				security_settings ON security_settings.securable_id = posts.id 
-	# 			INNER JOIN 
-	# 				securitylevels ON security_settings.securitylevel_id = securitylevels.id ").where("(securitylevels.id = '3'
-	# 								OR
-	# 							securitylevels.id = '4'
-	# 								OR
-	# 							securitylevels.id = '5')  
-	# 				AND 
-	# 					security_settings.securable_type = 'Post' 
-	# 				AND 
-	# 					users.id = #{self.id}")
-	# 	elsif friendlevel.id == 3
-	# 		return Post.joins(:user).joins("
-	# 			INNER JOIN 
-	# 				security_settings ON security_settings.securable_id = posts.id 
-	# 			INNER JOIN 
-	# 				securitylevels ON security_settings.securitylevel_id = securitylevels.id ").where("(securitylevels.id = '4'
-	# 								OR
-	# 							securitylevels.id = '5')  
-	# 				AND 
-	# 					security_settings.securable_type = 'Post' 
-	# 				AND 
-	# 					users.id = #{self.id}")
-	# 	end
-	# end		
+	end		
 end
 
