@@ -4,6 +4,10 @@ class User < ActiveRecord::Base
 	# :confirmable, :lockable, :timeoutable and :omniauthable
 	devise :database_authenticatable, :registerable,
 	       :recoverable, :rememberable, :trackable, :validatable
+
+	validates :first_name, presence: true
+	validates :last_name,presence: true
+
 	
 	has_many :posts
 	has_many :photos
@@ -21,24 +25,29 @@ class User < ActiveRecord::Base
 	# Method that returns all the FreindShip records where the state is pending 
 	# i.e pending requests
 	def getFriendRequests
-		FriendShip.where(reciever: self, state: "pending")
+		FriendShip.where(reciever: self, state: :pending)
 	end
 
 	# Method that returns all the friends
 	def getAllFriends
-		User.where("
-			users.id IN 
-				(
-					select friend_ships.user_id from friend_ships where 
-						friend_ships.friends_id = #{self.id} and friend_ships.state = 'done'
-				) 
-				OR 
-			users.id IN 
-				(
-					select friend_ships.friends_id from friend_ships where 
-						friend_ships.user_id = #{self.id} and friend_ships.state = 'done'
-				)
-		")
+		senders = FriendShip.select(:user_id).where(reciever: self,state: :done)
+		recievers = FriendShip.select(:friends_id).where(sender: self,state: :done)
+		
+		User.where(id: senders).or(User.where(id: recievers))
+
+		# User.where("
+		# 	users.id IN 
+		# 		(
+		# 			select friend_ships.user_id from friend_ships where 
+		# 				friend_ships.friends_id = #{self.id} and friend_ships.state = 'done'
+		# 		) 
+		# 		OR 
+		# 	users.id IN 
+		# 		(
+		# 			select friend_ships.friends_id from friend_ships where 
+		# 				friend_ships.user_id = #{self.id} and friend_ships.state = 'done'
+		# 		)
+		# ")
 	end
 
 	# Method to check if a certain user is a friend of ther user this method is called upon
@@ -109,138 +118,156 @@ class User < ActiveRecord::Base
 	def getActivityFeeds
 		# check that the user is a friend of the current user
 		# then check if the securitylevel_id of the targetable is greater than or equal to the friend level set by user plus one
-		friendsIds = self.getAllFriends.map(&:id)
-		ActivityFeed.where("
-			(
-				user_id in (?) 
-					AND 
-				(
-					securitylevel_id >= 
-						(
-							select friend_ships.securitylevel2_id+1 from friend_ships where 
-								(
-									user_id = #{self.id} AND friends_id in (?)
-								) limit 1
-						) 
-						OR 
-					securitylevel_id >= 
-						(
-							select friend_ships.securitylevel1_id+1 from friend_ships where 
-								(
-									user_id in (?) AND friends_id = #{self.id}
-								) limit 1
-						)
-				)
-			) 
-				OR
-			(
-				(
-					targetable_type = 'Post' 
-						AND
-					targetable_id in 
-							(
-								select posts.id from posts where user_id = #{self.id}
-							)
-				)
-					OR
-				(
-					targetable_type = 'Album' 
-						AND
-					targetable_id in 
-							(
-								select albums.id from albums where user_id = #{self.id}
-							)
-				)
-					OR
-				(
-					targetable_type = 'Photo' 
-						AND
-					targetable_id in 
-							(
-								select photos.id from photos where user_id = #{self.id}	
-							)
-				)
-					OR
-				(
-					targetable_type = 'Comment' 
-						AND
-					targetable_id in 
-					(
-						select comments.id from comments where
-						(
-							commentable_type = 'Post'
-								AND
-							commentable_id in 
-									(
-										select posts.id from posts where user_id = #{self.id}	
-									)
-						)
-							OR
-						(
-							commentable_type = 'Album'
-								AND
-							commentable_id in 
-									(
-										select albums.id from albums where user_id = #{self.id}
-									)
-						)
-							OR
-						(
-							commentable_type = 'Photo'
-								AND
-							commentable_id in 
-									(
-										select photos.id from photos where user_id = #{self.id}
-									)
-						)
-							OR
-						(
-							comments.user_id = #{self.id}
-						)
+		
+		
+		friendFeeds = ActivityFeed.where(user: self.getAllFriends)
+
+		senders = User.where(id: FriendShip.select(:user_id).where(reciever: self,state: :done))
+		recievers = User.where(id: FriendShip.select(:friends_id).where(sender: self,state: :done))
+
+		senderSecurityLevel = FriendShip.select("securitylevel1_id + 1").where(sender: self.getAllFriends,reciever:self).limit(1)
+
+		recieverSecurityLevel = FriendShip.select("securitylevel2_id + 1").where(sender: self,reciever: self.getAllFriends).limit(1)
+
+		ActivityFeed.where(user: senders).where("securitylevel_id >= (?)",senderSecurityLevel).or(ActivityFeed.where(user: recievers).where("securitylevel_id >= (?)",recieverSecurityLevel)).or(ActivityFeed.where(user: self))
+
+		# securedFriendFeeds = friendFeeds.where("securitylevel_id >= (?)",senderSecurityLevel).or(ActivityFeed.where("securitylevel_id >= (?)",recieverSecurityLevel))
+
+		# securedFriendFeedsOrSelfFeeds = securedFriendFeeds.or(ActivityFeed.where(user: self))
+		
+		# friendsIds = self.getAllFriends.map(&:id)
+
+		# ActivityFeed.where("
+		# 	(
+		# 		user_id in (?) 
+		# 			AND 
+		# 		(
+		# 			securitylevel_id >= 
+		# 				(
+		# 					select (friend_ships.securitylevel2_id + 1) from friend_ships where 
+		# 						(
+		# 							user_id = #{self.id} AND friends_id in (?) AND state = 'done'
+		# 						) limit 1
+		# 				) 
+		# 				OR 
+		# 			securitylevel_id >= 
+		# 				(
+		# 					select (friend_ships.securitylevel1_id + 1) from friend_ships where 
+		# 						(
+		# 							user_id in (?) AND friends_id = #{self.id}
+		# 						) limit 1
+		# 				)
+		# 		)
+		# 	) 
+		# 		OR
+		# 	(
+		# 		(
+		# 			targetable_type = 'Post' 
+		# 				AND
+		# 			targetable_id in 
+		# 					(
+		# 						select posts.id from posts where user_id = #{self.id}
+		# 					)
+		# 		)
+		# 			OR
+		# 		(
+		# 			targetable_type = 'Album' 
+		# 				AND
+		# 			targetable_id in 
+		# 					(
+		# 						select albums.id from albums where user_id = #{self.id}
+		# 					)
+		# 		)
+		# 			OR
+		# 		(
+		# 			targetable_type = 'Photo' 
+		# 				AND
+		# 			targetable_id in 
+		# 					(
+		# 						select photos.id from photos where user_id = #{self.id}	
+		# 					)
+		# 		)
+		# 			OR
+		# 		(
+		# 			targetable_type = 'Comment' 
+		# 				AND
+		# 			targetable_id in 
+		# 			(
+		# 				select comments.id from comments where
+		# 				(
+		# 					commentable_type = 'Post'
+		# 						AND
+		# 					commentable_id in 
+		# 							(
+		# 								select posts.id from posts where user_id = #{self.id}	
+		# 							)
+		# 				)
+		# 					OR
+		# 				(
+		# 					commentable_type = 'Album'
+		# 						AND
+		# 					commentable_id in 
+		# 							(
+		# 								select albums.id from albums where user_id = #{self.id}
+		# 							)
+		# 				)
+		# 					OR
+		# 				(
+		# 					commentable_type = 'Photo'
+		# 						AND
+		# 					commentable_id in 
+		# 							(
+		# 								select photos.id from photos where user_id = #{self.id}
+		# 							)
+		# 				)
+		# 					OR
+		# 				(
+		# 					comments.user_id = #{self.id}
+		# 				)
 						
-					)
-				)
-					OR
-				(
-					targetable_type = 'Like' 
-						AND
-					targetable_id in 
-						(
-							select likes.id from likes where
-							(
-								likeable_type = 'Post'
-									AND
-								likeable_id in 
-										(
-											select posts.id from posts where user_id = #{self.id}	
-										)
-							)
-								OR
-							(
-								likeable_type = 'Album'
-									AND
-								likeable_id in 
-										(
-											select albums.id from albums where user_id = #{self.id}
-										)
-							)
-								OR
-							(
-								likeable_type = 'Photo'
-									AND
-								likeable_id in 
-										(
-											select photos.id from photos where user_id = #{self.id}
-										)
-							)
-								OR
-							(
-								user_id = #{self.id}
-							)
+		# 			)
+		# 		)
+		# 			OR
+		# 		(
+		# 			targetable_type = 'Like' 
+		# 				AND
+		# 			targetable_id in 
+		# 				(
+		# 					select likes.id from likes where
+		# 					(
+		# 						likeable_type = 'Post'
+		# 							AND
+		# 						likeable_id in 
+		# 								(
+		# 									select posts.id from posts where user_id = #{self.id}	
+		# 								)
+		# 					)
+		# 						OR
+		# 					(
+		# 						likeable_type = 'Album'
+		# 							AND
+		# 						likeable_id in 
+		# 								(
+		# 									select albums.id from albums where user_id = #{self.id}
+		# 								)
+		# 					)
+		# 						OR
+		# 					(
+		# 						likeable_type = 'Photo'
+		# 							AND
+		# 						likeable_id in 
+		# 								(
+		# 									select photos.id from photos where user_id = #{self.id}
+		# 								)
+		# 					)
+		# 						OR
+		# 					(
+		# 						user_id = #{self.id}
+		# 					)
 							
-						)
-				)
-			)",friendsIds,friendsIds,friendsIds).order("activity_feeds.created_at DESC")
+		# 				)
+		# 		)
+		# 	)",friendsIds,friendsIds,friendsIds).order("activity_feeds.created_at DESC")
 	end
 
 	# ***************************************************************************************
