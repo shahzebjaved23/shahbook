@@ -34,20 +34,6 @@ class User < ActiveRecord::Base
 		recievers = FriendShip.select(:friends_id).where(sender: self,state: :done)
 		
 		User.where(id: senders).or(User.where(id: recievers))
-
-		# User.where("
-		# 	users.id IN 
-		# 		(
-		# 			select friend_ships.user_id from friend_ships where 
-		# 				friend_ships.friends_id = #{self.id} and friend_ships.state = 'done'
-		# 		) 
-		# 		OR 
-		# 	users.id IN 
-		# 		(
-		# 			select friend_ships.friends_id from friend_ships where 
-		# 				friend_ships.user_id = #{self.id} and friend_ships.state = 'done'
-		# 		)
-		# ")
 	end
 
 	# Method to check if a certain user is a friend of ther user this method is called upon
@@ -71,39 +57,42 @@ class User < ActiveRecord::Base
 	# else retrun only the public information
 
 	def getPhotos(friendId = nil)
-		if friendId != nil 
-			if(self.isFriendOf?(friendId))
-		 		return self.getSecurePhotos(friendId)
-		 	else
-		 		return getPublicPhotos
-		 	end
-	 	else
-	 		return self.photos
-	 	end
+		friendId != nil ? self.isFriendOf?(friendId) ? self.getSecurePhotos(friendId): self.getPublicPhotos : self.photos  
+		# if friendId != nil 
+		# 	if(self.isFriendOf?(friendId))
+		#  		return self.getSecurePhotos(friendId)
+		#  	else
+		#  		return getPublicPhotos
+		#  	end
+	 # 	else
+	 # 		return self.photos
+	 # 	end
 	end
 
 	def getAlbums(friendId = nil)
-		if friendId != nil 
-			if(self.isFriendOf?(friendId))
-		 		return self.getSecureAlbums(friendId)
-		 	else
-		 		return getPublicAlbums
-		 	end
-	 	else
-	 		return self.albums
-	 	end
+		friendId != nil ? self.isFriendOf?(friendId) ? self.getSecureAlbums(friendId): self.getPublicAlbums : self.albums 
+		# if friendId != nil 
+		# 	if(self.isFriendOf?(friendId))
+		#  		return self.getSecureAlbums(friendId)
+		#  	else
+		#  		return getPublicAlbums
+		#  	end
+	 # 	else
+	 # 		return self.albums
+	 # 	end
 	end
 
 	def getPosts(friendId = nil)
-		if friendId != nil 
-			if(self.isFriendOf?(friendId))
-		 		return self.getSecurePosts(friendId)
-		 	else
-		 		return getPublicPosts
-		 	end
-	 	else
-	 		return self.posts
-	 	end
+		friendId != nil ? self.isFriendOf?(friendId) ? self.getSecurePosts(friendId): self.getPublicPosts : self.posts 
+		# if friendId != nil 
+		# 	if(self.isFriendOf?(friendId))
+		#  		return self.getSecurePosts(friendId)
+		#  	else
+		#  		return getPublicPosts
+		#  	end
+	 # 	else
+	 # 		return self.posts
+	 # 	end
 	end
 
 	# ***************************************************************************************
@@ -139,25 +128,25 @@ class User < ActiveRecord::Base
 	def createActivityFeed(type,action)
 		# set the security level id of the resource that the comment or like references
 		
-		securitylevel_id = nil;
+		securitylevel_id = type.getSecurityLevel
 		
-		if type.class.name == "Comment"	 
-			if type.commentable_type == "Post"
-				securitylevel_id = Post.find(type.commentable_id).security_setting.securitylevel.id
-			elsif type.commentable_type == "Photo"
-				securitylevel_id = Photo.find(type.commentable_id).security_setting.securitylevel.id
-			elsif type.commentable_type == "Album"
-				securitylevel_id = Album.find(type.commentable_id).security_setting.securitylevel.id
-			end
-		elsif type.class.name == "Like"
-			if type.likeable_type == "Post"
-				securitylevel_id = Post.find(type.commentable_id).security_setting.securitylevel.id
-			elsif type.likeable_type == "Photo"
-				securitylevel_id = Photo.find(type.commentable_id).security_setting.securitylevel.id
-			elsif type.likeable_type == "Album"
-				securitylevel_id = Album.find(type.commentable_id).security_setting.securitylevel.id
-			end
-		end
+		# if type.class.name == "Comment"	 
+		# 	if type.commentable_type == "Post"
+		# 		securitylevel_id = Post.find(type.commentable_id).security_setting.securitylevel.id
+		# 	elsif type.commentable_type == "Photo"
+		# 		securitylevel_id = Photo.find(type.commentable_id).security_setting.securitylevel.id
+		# 	elsif type.commentable_type == "Album"
+		# 		securitylevel_id = Album.find(type.commentable_id).security_setting.securitylevel.id
+		# 	end
+		# elsif type.class.name == "Like"
+		# 	if type.likeable_type == "Post"
+		# 		securitylevel_id = Post.find(type.commentable_id).security_setting.securitylevel.id
+		# 	elsif type.likeable_type == "Photo"
+		# 		securitylevel_id = Photo.find(type.commentable_id).security_setting.securitylevel.id
+		# 	elsif type.likeable_type == "Album"
+		# 		securitylevel_id = Album.find(type.commentable_id).security_setting.securitylevel.id
+		# 	end
+		# end
 					
 		activity_feed = ActivityFeed.create(
 			targetable_id: type.id,
@@ -189,7 +178,7 @@ class User < ActiveRecord::Base
 
 	def getPublicAlbums
 		Album.where(id: SecuritySetting.select(:securable_id).where(securable: self.albums,securitylevel: Securitylevel.find_by(Securitylevel: "Public")))
-		end
+	end
 
 	def getPublicPosts
 		Post.where(id: SecuritySetting.select(:securable_id).where(securable: self.posts,securitylevel: Securitylevel.find_by(Securitylevel: "Public")))

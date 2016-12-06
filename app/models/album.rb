@@ -6,4 +6,8 @@ class Album < ActiveRecord::Base
 	has_many :likes, as: :likeable
 
 	has_one :security_setting, as: :securable
+
+	def getSecurityLevel
+		self.security_setting.securitylevel
+	end
 end
