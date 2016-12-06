@@ -16,7 +16,6 @@ class User < ActiveRecord::Base
 	has_one :interest
 	has_one :bio
 	has_many :activity_feeds
-	has_one :security_setting , as: :securable
 	has_one :profile_picture
 	has_many :friend_ships
 	has_many :friends, through: :friend_ships, class_name: 'User'
@@ -58,41 +57,14 @@ class User < ActiveRecord::Base
 
 	def getPhotos(friendId = nil)
 		friendId != nil ? self.isFriendOf?(friendId) ? self.getSecurePhotos(friendId): self.getPublicPhotos : self.photos  
-		# if friendId != nil 
-		# 	if(self.isFriendOf?(friendId))
-		#  		return self.getSecurePhotos(friendId)
-		#  	else
-		#  		return getPublicPhotos
-		#  	end
-	 # 	else
-	 # 		return self.photos
-	 # 	end
 	end
 
 	def getAlbums(friendId = nil)
 		friendId != nil ? self.isFriendOf?(friendId) ? self.getSecureAlbums(friendId): self.getPublicAlbums : self.albums 
-		# if friendId != nil 
-		# 	if(self.isFriendOf?(friendId))
-		#  		return self.getSecureAlbums(friendId)
-		#  	else
-		#  		return getPublicAlbums
-		#  	end
-	 # 	else
-	 # 		return self.albums
-	 # 	end
 	end
 
 	def getPosts(friendId = nil)
 		friendId != nil ? self.isFriendOf?(friendId) ? self.getSecurePosts(friendId): self.getPublicPosts : self.posts 
-		# if friendId != nil 
-		# 	if(self.isFriendOf?(friendId))
-		#  		return self.getSecurePosts(friendId)
-		#  	else
-		#  		return getPublicPosts
-		#  	end
-	 # 	else
-	 # 		return self.posts
-	 # 	end
 	end
 
 	# ***************************************************************************************
@@ -127,31 +99,10 @@ class User < ActiveRecord::Base
 	# ---------------------------------------------------------------------------------------
 	def createActivityFeed(type,action)
 		# set the security level id of the resource that the comment or like references
-		
-		securitylevel_id = type.getSecurityLevel
-		
-		# if type.class.name == "Comment"	 
-		# 	if type.commentable_type == "Post"
-		# 		securitylevel_id = Post.find(type.commentable_id).security_setting.securitylevel.id
-		# 	elsif type.commentable_type == "Photo"
-		# 		securitylevel_id = Photo.find(type.commentable_id).security_setting.securitylevel.id
-		# 	elsif type.commentable_type == "Album"
-		# 		securitylevel_id = Album.find(type.commentable_id).security_setting.securitylevel.id
-		# 	end
-		# elsif type.class.name == "Like"
-		# 	if type.likeable_type == "Post"
-		# 		securitylevel_id = Post.find(type.commentable_id).security_setting.securitylevel.id
-		# 	elsif type.likeable_type == "Photo"
-		# 		securitylevel_id = Photo.find(type.commentable_id).security_setting.securitylevel.id
-		# 	elsif type.likeable_type == "Album"
-		# 		securitylevel_id = Album.find(type.commentable_id).security_setting.securitylevel.id
-		# 	end
-		# end
-					
 		activity_feed = ActivityFeed.create(
 			targetable_id: type.id,
 			targetable_type: type.class.name,
-			securitylevel_id: securitylevel_id == nil ? type.security_setting.securitylevel.id : securitylevel_id,
+			securitylevel_id: type.getSecurityLevel,
 			status: action,
 			user_id: self.id
 		)
