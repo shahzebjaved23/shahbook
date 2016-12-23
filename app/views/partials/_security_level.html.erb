@@ -1,5 +1,5 @@
 <% if current_user.id == params[:user_id].to_i %>
-	<%= form_tag(user_security_level_path(current_user)) do %>
+	<%= form_tag(user_security_level_path(current_user),method: :put) do %>
 
 		<%= label_tag "Security Setting :",nil,style: "margin-bottom: 15px;font-size: 21px;font-weight: 200;" %>
 
@@ -13,12 +13,12 @@
 			<%= hidden_field_tag :post_id , resource.id %>
 			<% @securitylevels = Securitylevel.all %>
 			<% @value = "securitylevel" %>
-		<% elsif resource.class.name == "Photo"%>
+		<% elsif resource.class.name == "Photo" %>
 			<% @selected_id = Photo.find(resource.id).security_setting.securitylevel_id %>
 			<%= hidden_field_tag :photo_id , resource.id %>
 			<% @securitylevels = Securitylevel.all %>
 			<% @value = "securitylevel" %>
-		<% elsif resource.class.name == "Album"%>
+		<% elsif resource.class.name == "Album" %>
 			<% @selected_id = Album.find(resource.id).security_setting.securitylevel_id %>
 			<%= hidden_field_tag :album_id , resource.id %>
 			<% @securitylevels = Securitylevel.all %>

@@ -1,4 +1,5 @@
 <%= @photo.album ? link_to("See Whole Album '#{@photo.album.title}'",user_album_path(@user,@photo.album),class: "btn btn-primary",style: "color:white;clear: both;") : " " %>
+
 <%= render "partials/security_level" , resource: @photo %>
 <hr/>
 <div class="row" >

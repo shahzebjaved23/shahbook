@@ -5,15 +5,16 @@ Rails.application.routes.draw do
   
   root 'welcome#index', via: :get
 
+
+
   resources :users , except: [:index] do
-    resources :requests, only: [:index,:create,:destroy]
-    resources :friends, only: [:index]
+    resources :requests, only: [:index,:update,:create,:destroy]
+    resources :friends, only: [:index,:delete]
     resource :bio , except: [:index]
     resources :search, only: [:index]
     resource :profile_picture, only: [:new,:create,:destroy]
     resources :activity_feeds, only: [:index]
-    resources :friend_ships, only: [:update,:create,:destroy]
-    resource :security_level, only: [:create]
+    resource :security_level, only: [:update]
 
     resources :photos do 
       resources :comments,only: [:create,:destroy] do 

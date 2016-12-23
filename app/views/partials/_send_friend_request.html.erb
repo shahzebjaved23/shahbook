@@ -1,0 +1,8 @@
+<%= form_tag(user_requests_path(current_user)) do %>
+	<%= label_tag "Security Setting :",nil,style: "margin-bottom: 15px;font-size: 21px;font-weight: 200;" %>
+	<%= select_tag(:sender_security_level_id, 
+		options_from_collection_for_select(Friendlevel.all, "id", "friendlevel"),class: "application-select") %>
+
+	<%= hidden_field_tag :id, friend.id %>
+	<%= submit_tag "Send Friend Request", class: "btn btn-success",style: "color:white;margin-top:0;" %>
+<% end %>

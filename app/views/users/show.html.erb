@@ -36,11 +36,20 @@
 				<% else %>
 					<h3><%= @user.first_name %> has no personal information to show</h3>
 				<% end %>
-			</div>		
+				
+				<%= link_to "Edit Bio",edit_user_bio_path(current_user),class: "btn btn-info pull-right",style: "color:white;text-align:center;" if @user == current_user %>
+			</div>	
 		</section>	
 	</div>
 
-	<hr/>
+	<% if !Friend.new(@user).isFriendOf?(current_user) && @user != current_user && !FriendShip.isSentRequest?(@user.id,current_user.id) %>
+		<hr/>
+		<%= render "partials/send_friend_request" , friend: @user %>
+		<hr/>
+	<% elsif FriendShip.isSentRequest?(@user.id,current_user.id) %>
+		<button type="button" class="btn btn-info">Friend Request Sent</button>
+	<% end %>
+
 
 	<div>
 		<section>

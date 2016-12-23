@@ -17,9 +17,9 @@ class Album < ActiveRecord::Base
 				return user.albums
 			end  
 			if Friend.new(user).isFriendOf?(friendId)  
-				return getSecureAlbum(user,friendId)
+				return getSecureAlbums(user,friendId)
 			else 
-				return getPublicAlbum(user)
+				return getPublicAlbums(user)
 			end 
 		else
 			return user.albums 

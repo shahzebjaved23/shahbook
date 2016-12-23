@@ -17,9 +17,4 @@ class ApplicationController < ActionController::Base
       devise_parameter_sanitizer.permit(:account_update, keys: [:first_name,:last_name,:email, :password])
   end
 
-  # TODO: make the activity feeds after the last_sign_in appear first
-  # TODO: clear up the user interface, uptil and do code refactoring, 
-  # after this the main fucntionality is complete and start focusing 
-  # on the testing using test/unit and repec
-  # TODO: After that the project is now completely deployable
 end

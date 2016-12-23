@@ -8,7 +8,7 @@ class FriendShip < ActiveRecord::Base
 
 	belongs_to :sender, class_name: "User", foreign_key: :user_id
 	belongs_to :reciever , class_name: "User", foreign_key: :friends_id
-    
+
     def self.getFriendShip(friendId1,friendId2)
     	(FriendShip.where(user_id: friendId1,friends_id: friendId2).or(FriendShip.where(user_id: friendId2, friends_id: friendId1))).where(state: :done).first
 	end

@@ -17,7 +17,7 @@
 						<p><%= friend.bio.designation %> at <%= friend.bio.work_place %></p>
 					<% end %>
 					
-					<% if Friend.new(current_user).getAllFriends.include?(friend) %>
+					<% if Friend.new(current_user).isFriendOf?(friend) %>
 						<p>Friend since : <%= time_ago_in_words(FriendShip.getFriendShip(current_user.id,friend.id).created_at) %></p>
 						<span>Security Level : <%= Friend.new(current_user).getFriendLevel(friend.id).friendlevel %></span>
 					
@@ -32,14 +32,7 @@
 						</span>
 					<% else %>
 
-						<%= form_tag(user_friend_ships_path(current_user)) do %>
-							<%= label_tag "Security Setting :",nil,style: "margin-bottom: 15px;font-size: 21px;font-weight: 200;" %>
-							<%= select_tag(:sender_security_level_id, 
-								options_from_collection_for_select(Friendlevel.all, "id", "friendlevel"),class: "application-select") %>
-							
-							<%= hidden_field_tag :id, friend.id %>
-							<%= submit_tag "Send Friend Request", class: "btn btn-primary",style: "color:white;margin-top:0;" %>
-						<% end %>
+						<%= render "partials/send_friend_request", friend: friend %>
 
 						<span>
 							<%= link_to "View Profile",user_path(friend.id), class: "btn btn-primary" ,style: "color: white;"%>

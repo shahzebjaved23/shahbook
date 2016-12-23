@@ -27,7 +27,7 @@
 						<p>
 							<%= link_to "View Profile",user_path(friend), class: "btn btn-primary" , style: "color: white;" %>
 
-							<%= link_to "Un-Friend" , user_friend_ship_path(current_user,FriendShip.getFriendShip(current_user.id,friend.id).id), method: :delete , class: "btn btn-danger" , style: "color: white;"%>
+							<%= link_to "Un-Friend" , user_request_path(current_user,FriendShip.getFriendShip(current_user.id,friend.id).id), method: :delete , class: "btn btn-danger" , style: "color: white;"%>
 						</p>						
 					</div>
 

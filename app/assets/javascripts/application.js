@@ -41,4 +41,4 @@ var pollActivity = function(){
 	});
 }
 
-window.setInterval(pollActivity,5000);
+// window.setInterval(pollActivity,5000);
