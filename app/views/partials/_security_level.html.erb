@@ -4,7 +4,7 @@
 		<%= label_tag "Security Setting :",nil,style: "margin-bottom: 15px;font-size: 21px;font-weight: 200;" %>
 
 		<% if resource.class.name == "User" %>
-			<% @selected_id = current_user.getFriendLevel(resource.id).id %>
+			<% @selected_id = Friend.new(current_user).getFriendLevel(resource.id).id %>
 			<% @securitylevels = Friendlevel.all %>
 			<% @value = "friendlevel" %>
 			<%= hidden_field_tag :friend_id , resource.id %>

@@ -4,11 +4,8 @@ class PhotosController < ApplicationController
 	before_action :set_photo, only: [:show, :edit, :destroy]
 
 	def index
-		if @user == current_user
-			@photos = @user.getPhotos
-		else
-			@photos = @user.getPhotos(current_user.id)
-		end
+		@profile = Profile.new(@user)
+		@photos = @profile.getPhotosForUser(current_user.id)
 	end
 
 	def new 

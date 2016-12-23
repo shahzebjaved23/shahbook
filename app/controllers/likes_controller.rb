@@ -39,9 +39,12 @@ class LikesController < ApplicationController
 			end
 		end
 
-		flash[:danger] = "liked Successfully"
-		@like.save
-		redirect_to :back					
+		
+		if @like.save
+			flash[:danger] = "liked Successfully"
+			ActivityFeed.new.createActivityFeed(@like,"created")
+			redirect_to :back
+		end					
 	end
 
 	# invoked when someone unlikes someone

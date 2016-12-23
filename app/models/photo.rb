@@ -14,5 +14,30 @@ class Photo < ActiveRecord::Base
 
 	def getSecurityLevel
 		self.security_setting.securitylevel
+	end
+
+	def getPhotos(user,friendId = nil)
+		if friendId != nil
+			if friendId == user.id
+				return user.photos
+			end  
+			if Friend.new(user).isFriendOf?(friendId)  
+				return getSecurePhotos(user,friendId)
+			else 
+				return getPublicPhotos(user)
+			end 
+		else
+			return user.photos 
+		end
 	end	
+
+	private
+
+	def getPublicPhotos user
+		Photo.where(id: SecuritySetting.select(:securable_id).where(securable: user.photos,securitylevel: Securitylevel.find_by(Securitylevel: "Public")))
+	end
+
+	def getSecurePhotos(user,friendId)
+		Photo.where(id: SecuritySetting.select(:securable_id).where(securable: user.photos).where("securitylevel_id >= (?)",Friend.new(user).getFriendLevel(friendId).friendlevel))
+	end
 end

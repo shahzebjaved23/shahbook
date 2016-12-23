@@ -17,7 +17,7 @@ class CommentsController < ApplicationController
 				
 		respond_to do |format|
 	    	if @comment.save
-	        	current_user.createActivityFeed(@comment,"created")
+	        	ActivityFeed.new.createActivityFeed(current_user,@comment,"created")
 	        	format.html { redirect_to :back, notice: 'Comment was successfully created.' }
 	        	format.json { render :show, status: :created, location: @comment }
 	      	else

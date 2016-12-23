@@ -5,11 +5,8 @@ class PostsController < ApplicationController
   # GET /posts
   # GET /posts.json
   def index
-    if @user == current_user
-      @posts = @user.getPosts
-    else
-      @posts = @user.getPosts(current_user.id)
-    end
+    @profile = Profile.new(@user)
+    @posts = @profile.getPostsForUser(current_user.id)
   end
 
   # GET /posts/1
@@ -38,7 +35,7 @@ class PostsController < ApplicationController
     
     respond_to do |format|
       if @post.save
-        current_user.createActivityFeed(@post,"created")
+        ActivityFeed.new.createActivityFeed(@post,"created")
         format.html { redirect_to user_posts_path(current_user,@post), notice: 'Post was successfully created.' }
         format.json { render :show, status: :created, location: @post }
       else
@@ -53,7 +50,7 @@ class PostsController < ApplicationController
   def update
     respond_to do |format|
       if @post.update(post_params)
-        current_user.createActivityFeed(@post,"updated")
+        ActivityFeed.new.createActivityFeed(@post,"updated")
         @post.security_setting.securitylevel_id = params[:securitylevel_id]
         @post.security_setting.save
         format.html { redirect_to user_post_path(current_user,@post), notice: 'Post was successfully updated.' }

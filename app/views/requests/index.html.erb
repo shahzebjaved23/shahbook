@@ -14,15 +14,15 @@
 						<p><%= request.sender.bio.designation %> at <%= request.sender.bio.work_place %></p>
 					<% end %>
 					
-					<%= form_tag(user_friend_ship_path(current_user,request.id),method: :put) do %>
+					<%= form_tag(user_friend_ship_path(current_user,request.id),method: :put,class: "form-group") do %>
 						<%= label_tag "Security Setting :" %>
 						<%= select_tag(:reciever_security_setting_id, 
-							options_from_collection_for_select(Securitylevel.all, "id", "securitylevel")) %>
+							options_from_collection_for_select(Friendlevel.all, "id", "friendlevel"),class: "form-control") %>
 							
-						<%= submit_tag "Accept Request"%>
+						<%= submit_tag "Accept Request", class: "btn btn-primary" %>
 					<% end %>
 
-					<%= link_to 'Cancel Request', user_friend_ship_path(current_user,request.id),method: :delete,class: "btn btn-primary"%>
+					<%= link_to 'Cancel Request', user_friend_ship_path(current_user,request.id),method: :delete,class: "btn btn-danger"%>
 					
 					<span>
 						<%= link_to "View Profile",user_path(request.sender), class: "btn btn-primary" %>

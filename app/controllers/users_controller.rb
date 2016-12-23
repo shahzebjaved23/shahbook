@@ -1,15 +1,14 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
-  # GET /users
-  # GET /users.json
-  def index
-    @users = User.all
-  end
-
+ 
   # GET /users/1
   # GET /users/1.json
   def show
+    @profile = Profile.new(@user)
+    @posts = @profile.getPostsForUser(current_user.id)
+    @photos = @profile.getPhotosForUser(current_user.id)
+    @albums = @profile.getAlbumsForUser(current_user.id)
   end
 
   # GET /users/new
@@ -67,7 +66,7 @@ class UsersController < ApplicationController
       if User.where(id: params[:id]).count == 1
         @user = User.find(params[:id])
       else
-        flash[:danger] = "Resource Not Found"
+        flash[:danger] = "Resource Not Found - user not found having the specified user id"
         redirect_to user_path(current_user)
       end
     end

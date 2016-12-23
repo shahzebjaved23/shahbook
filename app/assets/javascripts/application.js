@@ -17,24 +17,25 @@
 //= require turbolinks
 //= require_tree .
 
-var current_user_id = $(location).attr('href').match("[0-9]");
+var current_user_id = $(location).attr('href').match("/user/[0-9]/");
 var lastFetch;
-console.log(Routes.user_activity_feeds_path(7,{since: lastFetch}));
+console.log(Routes.user_activity_feeds_path(4,{since: lastFetch}));
+console.log(current_user_id);
 
 var pollActivity = function(){
 	$.ajax({
-		url: Routes.user_activity_feeds_path(7,{
+		url: Routes.user_activity_feeds_path(4,{
 				since: lastFetch
 			 }),
 		type: "GET",
 		dataType: "json",
 		success: function(data){
 			lastFetch = Math.floor(new Date().getTime())/1000;
-			console.log(Routes.user_activity_feeds_path(7,{since: lastFetch})); 
+			console.log(Routes.user_activity_feeds_path(4,{since: lastFetch})); 
 			console.log(data);
 		},
 		error: function(error){
-			console.log(Routes.user_activity_feeds_path(7,{since: lastFetch}));
+			console.log(Routes.user_activity_feeds_path(4,{since: lastFetch}));
 			console.log(error);
 		}
 	});

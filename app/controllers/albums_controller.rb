@@ -5,15 +5,12 @@ class AlbumsController < ApplicationController
 	
 
 	def index
-		if @user == current_user
-			@albums = @user.getAlbums
-		else
-			@albums = @user.getAlbums(current_user.id)
-		end
+		@profile = Profile.new(@user)
+		@albums = @profile.getAlbumsForUser(current_user.id)
 	end
 
 	def show
-		# sets an album from :user_id,:album_id in params
+		# sets an album from :user_id and :album_id in params
 		# render the show template
 	end
 
@@ -29,7 +26,7 @@ class AlbumsController < ApplicationController
 
 		respond_to do |format|
 	    	if @album.save
-	        	current_user.createActivityFeed(@album,"created")
+	        	ActivityFeed.new.createActivityFeed(@album,"created")
 	        	format.html { redirect_to user_album_path(@user,@album), notice: 'Post was successfully created.' }
 	        	format.json { render :show, status: :created, location: @album }
 	      	else
@@ -47,7 +44,7 @@ class AlbumsController < ApplicationController
 	def update
 		respond_to do |format|
 	      	if @album.update(album_params)
-	        	current_user.createActivityFeed(@album,"updated")
+	        	ActivityFeed.new.createActivityFeed(@album,"updated")
 
 	        	format.html { redirect_to @album, notice: 'album was successfully updated.' }
 	        	format.json { render :show, status: :ok, location: @album }

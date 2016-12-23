@@ -1,9 +1,9 @@
 <% #if the current user has friends then show friends %>
-<% if current_user.getAllFriends.count != 0 %>
+<% if @friends.count != 0 %>
 	<div>
-		<p>You have <%= current_user.getAllFriends.count %> friends</p>
+		<p>You have <%= @friends.count %> friends</p>
 		
-		<% current_user.getAllFriends.each do |friend| %>
+		<% @friends.each do |friend| %>
 			
 			<div class="component">
 				<div class="row">
@@ -21,7 +21,7 @@
 						<p>Friend since : <%= time_ago_in_words(FriendShip.getFriendShip(current_user.id,friend.id).updated_at) %></p>
 						
 						<p>
-							Friend Security Level : <%= current_user.getFriendLevel(friend.id) ? current_user.getFriendLevel(friend.id).friendlevel : "No security level"  %>
+							Friend Security Level : <%= Friend.new(current_user).getFriendLevel(friend.id) ? Friend.new(current_user).getFriendLevel(friend.id).friendlevel : "No security level"  %>
 						</p>
 
 						<p>

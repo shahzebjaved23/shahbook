@@ -9,17 +9,16 @@ class FriendShip < ActiveRecord::Base
 	belongs_to :sender, class_name: "User", foreign_key: :user_id
 	belongs_to :reciever , class_name: "User", foreign_key: :friends_id
     
-    # static method
-	def self.getFriendShip(friendId1,friendId2)
-		FriendShip.where("((user_id = ? AND friends_id = ?) OR (user_id = ? AND friends_id = ?)) AND state = 'done'",friendId1,friendId2,friendId2,friendId1).first
+    def self.getFriendShip(friendId1,friendId2)
+    	(FriendShip.where(user_id: friendId1,friends_id: friendId2).or(FriendShip.where(user_id: friendId2, friends_id: friendId1))).where(state: :done).first
+	end
+
+	def self.getFriendShipRelation(friendId1,friendId2)
+    	(FriendShip.where(user_id: friendId1,friends_id: friendId2).or(FriendShip.where(user_id: friendId2, friends_id: friendId1))).where(state: :done)
 	end
 
 	def self.isSentRequest?(friendId1,friendId2)
-		request = FriendShip.where("((user_id = ? AND friends_id = ?) OR (user_id = ? AND friends_id = ?)) AND state = 'pending'",friendId1,friendId2,friendId2,friendId1)
-		if request.count == 0
-			return false
-		else
-			return true
-		end
+		request = (FriendShip.where(user_id: friendId1,friends_id: friendId2).or(FriendShip.where(user_id: friendId2, friends_id: friendId1))).where(state: :pending)
+		request.count != 0
 	end
 end
