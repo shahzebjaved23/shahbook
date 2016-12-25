@@ -19,8 +19,8 @@
 
 var current_user_id = $(location).attr('href').match("/user/[0-9]/");
 var lastFetch;
-console.log(Routes.user_activity_feeds_path(4,{since: lastFetch}));
-console.log(current_user_id);
+// console.log(Routes.user_activity_feeds_path(4,{since: lastFetch}));
+// console.log(current_user_id);
 
 var pollActivity = function(){
 	$.ajax({

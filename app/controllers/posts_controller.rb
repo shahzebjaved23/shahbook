@@ -35,7 +35,7 @@ class PostsController < ApplicationController
     
     respond_to do |format|
       if @post.save
-        ActivityFeed.new.createActivityFeed(@post,"created")
+        ActivityFeed.new.createActivityFeed(current_user,@post,"created")
         format.html { redirect_to user_posts_path(current_user,@post), notice: 'Post was successfully created.' }
         format.json { render :show, status: :created, location: @post }
       else
