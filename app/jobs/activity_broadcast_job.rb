@@ -2,6 +2,11 @@ class ActivityBroadcastJob < ApplicationJob
   queue_as :default
 
   def perform(data)
-	ActivityFeedsChannel.broadcast_to(data[:user].id,data[:feed]) 
+  	user = data[:user]
+  	activity_feed = data[:feed]
+  	html = ApplicationController.render partial: "activity_feeds/activity_feed", locals: { activity_feed: activity_feed }, formats: [:html]
+	ActivityFeedsChannel.broadcast_to(user.id,html) 
   end
 end
+
+

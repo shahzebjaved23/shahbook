@@ -1,0 +1,62 @@
+<div class="jumbotron">
+
+		<div class="row">
+			<div class="col-md-4" style="background-color: #333;">
+				<%= link_to(activity_feed.user.profile_picture ? image_tag(activity_feed.user.profile_picture.picture.url,class: "img img-responsive",style: "width:auto;height:200px;margin:0 auto;") : image_tag(image_url('defaulthead.png'),class: "img img-responsive",style: "width:auto;height:200px;margin:0 auto;"), user_path(activity_feed.user)) %>		
+			</div>
+
+			<div class="col-md-8">
+				<h2>
+					<%= activity_feed.user.first_name %> <%= activity_feed.status %>
+					<%= activity_feed.status == "created" ? "a new" : "a" %>
+					<%= activity_feed.targetable_type %>
+					<% if activity_feed.targetable_type == "Comment" %>
+						On 
+						<% if activity_feed.targetable.commentable_type == "Post" %>
+							<%= link_to activity_feed.targetable.commentable_type, user_post_path(activity_feed.targetable.commentable.user,activity_feed.targetable.commentable), class: "btn btn-primary",style: "color:white;"%>
+						<% elsif activity_feed.targetable.commentable_type == "Photo" %>
+							<%= link_to activity_feed.targetable.commentable_type, user_photo_path(activity_feed.targetable.commentable.user,activity_feed.targetable.commentable), class: "btn btn-primary",style: "color:white;"%>
+						<% elsif activity_feed.targetable.commentable_type == "Album" %>
+							<%= link_to activity_feed.targetable.commentable_type, user_album_path(activity_feed.targetable.commentable.user,activity_feed.targetable.commentable), class: "btn btn-primary",style: "color:white;"%>
+						<% end %>
+						
+					<% end %>
+				</h2>
+
+				<p><%= time_ago_in_words(activity_feed.created_at) %></p>
+
+				<% if activity_feed.targetable_type == "Post" %>
+
+					<h2><%= activity_feed.targetable.title %></h2>
+
+					
+					<%= link_to "More Details",user_post_path(activity_feed.targetable.user,activity_feed.targetable.id) , class: "btn btn-primary",style: "color:white" %>
+
+				<% elsif activity_feed.targetable_type == "Photo" %>
+					
+					<%= link_to "More Details",user_photo_path(activity_feed.targetable.user,activity_feed.targetable_id), class: "btn btn-primary" ,style: "color:white"%>
+
+				<% elsif activity_feed.targetable_type == "Album" %>
+					
+					<%= link_to "More Details",user_album_path(activity_feed.targetable.user,activity_feed.targetable_id), class: "btn btn-primary",style: "color:white" %>
+				
+				<% else activity_feed.targetable_type == "Comment" %>
+					
+					<% if activity_feed.targetable.commentable_type == "Post" %>
+						
+						<%= link_to "More Details",user_post_path(activity_feed.targetable.user,activity_feed.targetable_id),class: "btn btn-primary",style: "color:white;" %>
+
+					<% elsif activity_feed.targetable.commentable_type == "Photo" %>
+						
+						<%= link_to "More Details",user_post_path(activity_feed.user,activity_feed.targetable_id),class: "btn btn-primary",style: "color:white;" %>
+
+					<% elsif activity_feed.targetable.commentable_type == "Album" %>
+						
+						<%= link_to "More Details",user_post_path(activity_feed.user,activity_feed.targetable_id),class: "btn btn-primary",style: "color:white;" %>
+
+					<% end %>
+
+				<% end %>
+			</div>		 			
+		</div>
+	</div>		

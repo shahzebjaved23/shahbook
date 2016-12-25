@@ -12,6 +12,7 @@ class ActivityFeed < ActiveRecord::Base
 
 	def broadcastActivityFeeds
 		self.users.each do |user|
+			# enque the jobs 
 			ActivityBroadcastJob.perform_later(user: user,feed: self)
 		end 
 	end
@@ -22,7 +23,7 @@ class ActivityFeed < ActiveRecord::Base
 		selfReceiever = FriendShip.where(reciever: self.user,state: :done).where("securitylevel2_id <= ?",self.securitylevel_id - 1)
 	
 
-		User.where(id: selfSender.select("friends_id")).or(User.where(id: selfReceiever.select("user_id")))
+		User.where(id: selfSender.select("friends_id")).or(User.where(id: selfReceiever.select("user_id"))).or(User.where(id: self.user_id))
 	end
 
 	def getActivityFeeds(user)		
