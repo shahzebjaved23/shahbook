@@ -21,4 +21,8 @@ class FriendShip < ActiveRecord::Base
 		request = (FriendShip.where(user_id: friendId1,friends_id: friendId2).or(FriendShip.where(user_id: friendId2, friends_id: friendId1))).where(state: :pending)
 		request.count != 0
 	end
+
+	def self.getFriendLevel user,friend
+		FriendShip.select("securitylevel1_id").where(sender: user,reciever: friend).or(FriendShip.select("securitylevel2_id").where(sender: friend,reciever: user))
+	end
 end

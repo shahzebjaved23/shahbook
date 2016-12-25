@@ -8,7 +8,22 @@ class ActivityFeed < ActiveRecord::Base
 	validates :targetable_type, presence: true
 	validates :user_id, presence: true
 
-	after_create_commit { ActivityBroadcastJob.perform_later(self) }
+	after_create_commit :broadcastActivityFeeds
+
+	def broadcastActivityFeeds
+		self.users.each do |user|
+			ActivityBroadcastJob.perform_later(user: user,feed: self)
+		end 
+	end
+	
+	def users 
+		selfSender = FriendShip.where(sender: self.user,state: :done).where("securitylevel1_id <= ?",self.securitylevel_id - 1)
+		
+		selfReceiever = FriendShip.where(reciever: self.user,state: :done).where("securitylevel2_id <= ?",self.securitylevel_id - 1)
+	
+
+		User.where(id: selfSender.select("friends_id")).or(User.where(id: selfReceiever.select("user_id")))
+	end
 
 	def getActivityFeeds(user)		
 		ActivityFeed.where(user: senders(user)).where("securitylevel_id >= (?)",senderSecurityLevel(user)).or(ActivityFeed.where(user: recievers(user)).where("securitylevel_id >= (?)",recieverSecurityLevel(user))).or(ActivityFeed.where(user: user)).order("created_at DESC")
