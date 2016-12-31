@@ -10,7 +10,7 @@ class CommentsController < ApplicationController
 		elsif params.has_key? :photo_id
 			@comment.commentable_type = "Photo"
 			@comment.commentable_id = params[:photo_id]
-		elsif params.has_key? :post_id
+		elsif params.has_key? :post_id			 
 			@comment.commentable_type = "Post"
 			@comment.commentable_id = params[:post_id]
 		end
