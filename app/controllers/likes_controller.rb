@@ -42,7 +42,7 @@ class LikesController < ApplicationController
 		
 		if @like.save
 			flash[:danger] = "liked Successfully"
-			ActivityFeed.new.createActivityFeed(@like,"created")
+			ActivityFeed.new.createActivityFeed(current_user,@like,"created")
 			redirect_to :back
 		end					
 	end

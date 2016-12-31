@@ -24,7 +24,7 @@
 
 		<%= f.label :caption %>
 		<%= f.text_field :caption ,class: "form-control" %>
-		<%= f.file_field :picture, class: "form-control" %>
+		<%= f.file_field :picture, class: "form-control file_field_tag" %>
 
 
 		<hr/>
@@ -39,7 +39,25 @@
 		
 		<hr/>
 
-		<%= f.submit %>
+		<%= f.submit "Create Photo" %>
 
 	<% end %>
+
+
+	<hr/>
+	<img style="margin: 0 auto;" id="blah" class="img img-responsive" style="display: none;" src="">
+
+	<script>
+		$(".file_field_tag").change(function(){
+			var reader = new FileReader();
+			reader.onload = function (e) {
+	                    $('#blah')
+	                        .attr('src', e.target.result);
+	                    $('#blah')
+	                        .style('display', "block");    
+	                };
+
+	        reader.readAsDataURL(this.files[0]);
+		});
+	</script>
 </div>

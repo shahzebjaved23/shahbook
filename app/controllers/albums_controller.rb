@@ -26,7 +26,7 @@ class AlbumsController < ApplicationController
 
 		respond_to do |format|
 	    	if @album.save
-	        	ActivityFeed.new.createActivityFeed(@album,"created")
+	        	ActivityFeed.new.createActivityFeed(current_user,@album,"created")
 	        	format.html { redirect_to user_album_path(@user,@album), notice: 'Post was successfully created.' }
 	        	format.json { render :show, status: :created, location: @album }
 	      	else
@@ -44,7 +44,7 @@ class AlbumsController < ApplicationController
 	def update
 		respond_to do |format|
 	      	if @album.update(album_params)
-	        	ActivityFeed.new.createActivityFeed(@album,"updated")
+	        	ActivityFeed.new.createActivityFeed(current_user,@album,"updated")
 
 	        	format.html { redirect_to @album, notice: 'album was successfully updated.' }
 	        	format.json { render :show, status: :ok, location: @album }

@@ -1,6 +1,6 @@
 <div class="row" style="background-color: #eee;">
-	<div class="col-md-3">
-    	<%= link_to(activity_feed.user.profile_picture ? image_tag(activity_feed.user.profile_picture.picture.url,class: "img img-responsive",style: "height:100px;margin:20px auto;") : image_tag(image_url('defaulthead.png'),class: "media-object",style: "height:64px;width:64px;margin:20px auto"), user_path(activity_feed.user)) %>	  
+	<div class="col-md-2">
+    	<%= link_to(activity_feed.user.profile_picture ? image_tag(activity_feed.user.profile_picture.picture.url,class: "img img-responsive",style: "height:100px;margin:30px auto;") : image_tag(image_url('defaulthead.png'),class: "media-object",style: "height:64px;width:64px;margin:20px auto"), user_path(activity_feed.user)) %>	  
 	</div>
 
 	<div class="col-md-9">
@@ -31,8 +31,10 @@
 				<%= link_to "Show Post",user_post_path(activity_feed.targetable.user,activity_feed.targetable.id) , class: "btn btn-primary",style: "color:white" %>
 
 			<% elsif activity_feed.targetable_type == "Photo" %>
+
+				<%= image_tag(activity_feed.targetable.picture.url, class: "img img-responsive",style: "width: 200px;max-height:300px;margin: 0 auto;")%>
 				
-				<%= link_to "Show Photo",user_photo_path(activity_feed.targetable.user,activity_feed.targetable_id), class: "btn btn-primary" ,style: "color:white"%>
+				<%= link_to "Show Photo",user_photo_path(activity_feed.targetable.user,activity_feed.targetable_id), class: "btn btn-primary" ,style: "color:white;margin-bottom:20px;"%>
 
 			<% elsif activity_feed.targetable_type == "Album" %>
 				

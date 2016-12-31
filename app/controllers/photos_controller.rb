@@ -17,6 +17,7 @@ class PhotosController < ApplicationController
 	def create
 		# create Photo from the params
 		@photo = Photo.new(photo_params)
+		@photo.security_setting = SecuritySetting.new
 
 		# set the album if album_id exists in params
 		if params.has_key?(:album_id)
@@ -36,7 +37,7 @@ class PhotosController < ApplicationController
 	
 		respond_to do |format|
 	    	if @photo.save
-	        	current_user.createActivityFeed(@photo,"created")
+	        	ActivityFeed.new.createActivityFeed(current_user,@photo,"created")
 	        	if params.has_key?(:album_id)
 					format.html { redirect_to user_album_photo_path(@user,@photo.album,@photo), notice: 'photo was successfully updated.' }
 				else
@@ -60,7 +61,7 @@ class PhotosController < ApplicationController
 	      	if @photo.update(photo_params)
 
 	      		@photo.security_setting.securitylevel_id = params[:securitylevel_id]
-	        	current_user.createActivityFeed(@photo,"updated")
+	        	ActivityFeed.new.createActivityFeed(current_user,@photo,"updated")
 
 			    if params.has_key?(:album_id)
 					format.html { redirect_to user_album_photo_path(@user,@album,@photo), notice: 'photo was successfully updated.' }

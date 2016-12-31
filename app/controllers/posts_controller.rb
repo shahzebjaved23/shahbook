@@ -50,7 +50,7 @@ class PostsController < ApplicationController
   def update
     respond_to do |format|
       if @post.update(post_params)
-        ActivityFeed.new.createActivityFeed(@post,"updated")
+        ActivityFeed.new.createActivityFeed(current_user,@post,"updated")
         @post.security_setting.securitylevel_id = params[:securitylevel_id]
         @post.security_setting.save
         format.html { redirect_to user_post_path(current_user,@post), notice: 'Post was successfully updated.' }
