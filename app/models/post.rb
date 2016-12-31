@@ -34,7 +34,7 @@ class Post < ActiveRecord::Base
 	end
 
 	def getSecurePosts(user,friendId)
-		Post.where(id: SecuritySetting.select(:securable_id).where(securable: user.posts).where("securitylevel_id >= (?)",Friend.new(user).getFriendLevel(friendId).friendlevel))
+		Post.where(id: SecuritySetting.select(:securable_id).where(securable: user.posts).where("securitylevel_id >= (?)",Friend.new(user).getFriendLevel(friendId).id + 1))
 	end		
 end
 

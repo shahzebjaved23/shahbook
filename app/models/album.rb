@@ -14,15 +14,14 @@ class Album < ActiveRecord::Base
 	def getAlbums(user,friendId = nil)
 		if friendId != nil
 			if friendId == user.id
-				return user.albums
-			end  
-			if Friend.new(user).isFriendOf?(friendId)  
-				return getSecureAlbums(user,friendId)
+				user.albums  
+			elsif Friend.new(user).isFriendOf?(friendId)  
+				getSecureAlbums(user,friendId)
 			else 
-				return getPublicAlbums(user)
+				getPublicAlbums(user)
 			end 
 		else
-			return user.albums 
+			user.albums 
 		end
 	end
 
@@ -33,6 +32,6 @@ class Album < ActiveRecord::Base
 	end
 
 	def getSecureAlbums(user,friendId)
-		Album.where(id: SecuritySetting.select(:securable_id).where(securable: user.albums).where("securitylevel_id >= (?)",Friend.new(user).getFriendLevel(friendId).friendlevel))
+		Album.where(id: SecuritySetting.select(:securable_id).where(securable: user.albums).where("securitylevel_id >= (?)",Friend.new(user).getFriendLevel(friendId).id + 1))
 	end
 end

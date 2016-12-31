@@ -38,6 +38,6 @@ class Photo < ActiveRecord::Base
 	end
 
 	def getSecurePhotos(user,friendId)
-		Photo.where(id: SecuritySetting.select(:securable_id).where(securable: user.photos).where("securitylevel_id >= (?)",Friend.new(user).getFriendLevel(friendId).friendlevel))
+		Photo.where(id: SecuritySetting.select(:securable_id).where(securable: user.photos).where("securitylevel_id >= (?)",Friend.new(user).getFriendLevel(friendId).id + 1))
 	end
 end

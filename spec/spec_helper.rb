@@ -16,6 +16,9 @@
 # users commonly want.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+require 'factory_girl'
+require 'database_cleaner'
+require "factory"
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
@@ -31,6 +34,28 @@ RSpec.configure do |config|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
 
+
+  config.before(:suite) do
+    DatabaseCleaner.clean_with :truncation, :except => %w[friendlevels securitylevels]
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.strategy = :transaction
+  end
+
+  config.before(:each, :js => true) do
+    DatabaseCleaner.strategy = :truncation,{:except => %w[friendlevels securitylevels]}
+  end
+
+  config.before(:each, :database) do
+    # open transaction
+    DatabaseCleaner.start
+  end
+
+  config.after(:each, :database) do
+    DatabaseCleaner.clean :except => %w[friendlevels securitylevels]
+  end
+
   # rspec-mocks config goes here. You can use an alternate test double
   # library (such as bogus or mocha) by changing the `mock_with` option here.
   config.mock_with :rspec do |mocks|
@@ -39,7 +64,8 @@ RSpec.configure do |config|
     # `true` in RSpec 4.
     mocks.verify_partial_doubles = true
   end
-
+  
+  config.include FactoryGirl::Syntax::Methods
   # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
   # have no way to turn it off -- the option exists only for backwards
   # compatibility in RSpec 3). It causes shared context metadata to be
