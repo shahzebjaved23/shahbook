@@ -5,3 +5,16 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+
+Friendlevel.create(id:1,friendlevel: "Close Friend")
+Friendlevel.create(id:2,friendlevel: "Friend")
+Friendlevel.create(id:3,friendlevel: "Acquaintance")
+
+Securitylevel.create(id:1,securitylevel: "Private")
+Securitylevel.create(id:2,securitylevel: "Close Friend")
+Securitylevel.create(id:3,securitylevel: "Friend")
+Securitylevel.create(id:4,securitylevel: "Acquaintance")
+Securitylevel.create(id:5,securitylevel: "Public")
+
+
