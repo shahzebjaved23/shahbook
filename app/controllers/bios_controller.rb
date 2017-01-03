@@ -29,16 +29,25 @@ class BiosController < ApplicationController
 
   def update
     @bio = @user.bio
-    
-    respond_to do |format|
-      if @bio.update(bio_params)
-        format.html { redirect_to user_bio_path(@user), notice: 'User was successfully updated.' }
-        format.json { render :show, status: :ok, location: @user }
-      else
-        format.html { render :edit }
-        format.json { render json: @bio.errors, status: :unprocessable_entity }
-      end
+
+    if @bio.update(bio_params)
+      flash["notice"] = "Your bio was successfully updated."
+      redirect_to user_bio_path(@user)
+    else
+      flash["danger"] = "Some erros prevented your bio from being saved : #{@bio.errors.messages}"
+      redirect_to edit_user_bio_path(@user)
     end
+
+    
+    # respond_to do |format|
+    #   if @bio.update(bio_params)
+    #     format.html { redirect_to user_bio_path(@user), notice: 'Your bio was successfully updated.' }
+    #     format.json { render json: @bio, status: :ok, location: @user }
+    #   else
+    #     format.html { render :edit }
+    #     format.json { render json: @bio.errors, status: :unprocessable_entity }
+    #   end
+    # end
   end
 
   def destroy

@@ -10,8 +10,8 @@ Rails.application.routes.draw do
   resources :users , except: [:index] do
     resources :requests, only: [:index,:update,:create,:destroy]
     resources :friends, only: [:index,:delete]
-    resource :bio , except: [:index]
-    resources :search, only: [:index]
+    resource :bio , except: [:index], defaults: {format: 'html'}
+    resources :search ,only: [:index]
     resource :profile_picture, only: [:new,:create,:destroy]
     resources :activity_feeds, only: [:index]
     resource :security_level, only: [:update]

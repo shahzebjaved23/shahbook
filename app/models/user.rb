@@ -9,7 +9,6 @@ class User < ActiveRecord::Base
 	has_many :photos
 	has_many :albums
 	has_many :comments
-	has_one :interest
 	has_one :bio
 	has_many :activity_feeds
 	has_one :profile_picture

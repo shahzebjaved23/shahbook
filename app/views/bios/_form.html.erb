@@ -1,4 +1,4 @@
-<%= form_for [@user,@bio],html: {class: "form-group"} do |f| %>
+<%= form_for [@user,@bio],html: {class: "form-group form-horizontal",format: "html"} do |f| %>
   <% if @bio.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@bio.errors.count, "error") %> prohibited this bio from being saved:</h2>
