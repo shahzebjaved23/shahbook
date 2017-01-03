@@ -7,10 +7,9 @@ class BiosController < ApplicationController
   end
 
   def new
-    @bio = Bio.new
   end
 
-  def edit
+  def edit   
   end
 
   def create
@@ -52,7 +51,12 @@ class BiosController < ApplicationController
 
   private
     def set_bio
-      @bio = @user.bio    
+      if @user.bio
+          @bio = @user.bio
+      else
+          @user.bio = Bio.new
+          @bio = @user.bio
+      end    
     end
 
     def set_user
